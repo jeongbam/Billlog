@@ -42,14 +42,14 @@ function InviteContent() {
             <CheckCircleIcon size={40} className="text-mint-500" />
           </div>
           <h1 className="text-[22px] font-bold">모임이 생성됐어요</h1>
-          <p className="text-[14px] text-gray-500 mt-2 leading-relaxed">
+          <p className="text-[18px] text-gray-500 mt-2 leading-relaxed">
             모임 상세에서 계획을 정리하거나
             <br />
             모임 당일 정산을 진행할 수 있어요
           </p>
-          <div className="w-full bg-white border border-gray-100 rounded-2xl p-3.5 mt-7 text-left">
+          <div className="w-full bg-white border border-gray-100 rounded-xl p-3.5 mt-7 text-left">
             <div className="text-[15px] font-bold">{meeting.title}</div>
-            <div className="text-[12px] text-gray-500 mt-1">
+            <div className="text-[16px] text-gray-500 mt-1">
               {meeting.place || "장소 미정"} · {meeting.memberIds.length}명 참여
             </div>
           </div>
@@ -76,22 +76,24 @@ function InviteContent() {
           함께할 친구들을 초대해보세요
         </h2>
 
-        <div className="bg-white border border-gray-100 rounded-2xl p-3.5 my-5 flex justify-between items-center">
+        <div className="bg-white border border-gray-100 rounded-xl p-3.5 my-5 flex justify-between items-center">
           <div className="min-w-0">
-            <div className="text-[12px] text-gray-500">초대 링크</div>
-            <div className="text-[13.5px] font-semibold mt-1 truncate">{link}</div>
+            <div className="text-[16px] text-gray-500">초대 링크</div>
+            <div className="text-[13.5px] font-semibold mt-1 truncate">
+              {link}
+            </div>
           </div>
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 text-[12px] font-bold border border-gray-200 rounded-full px-3.5 py-2 flex-none ml-2"
+            className="flex items-center gap-1.5 text-[16px] font-bold border border-gray-200 rounded-full px-3.5 py-2 flex-none ml-2"
           >
             <CopyIcon size={14} />
             {copied ? "복사됨" : "복사"}
           </button>
         </div>
 
-        <p className="text-[12px] text-gray-400 mb-2.5">참여 코드</p>
-        <div className="bg-mint-50 border border-mint-100 rounded-2xl p-4 text-center text-[22px] font-bold tracking-[0.3em] text-mint-500">
+        <p className="text-[16px] text-gray-400 mb-2.5">참여 코드</p>
+        <div className="bg-mint-50 border border-mint-100 rounded-xl p-4 text-center text-[22px] font-bold tracking-[0.3em] text-mint-500">
           {meeting?.joinCode ?? "------"}
         </div>
       </div>

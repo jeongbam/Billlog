@@ -12,14 +12,6 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ko">
-      <head>
-        <link
-          rel="stylesheet"
-          as="style"
-          crossOrigin="anonymous"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"
-        />
-      </head>
       <body className="antialiased">
         <AuthProvider>{children}</AuthProvider>
       </body>

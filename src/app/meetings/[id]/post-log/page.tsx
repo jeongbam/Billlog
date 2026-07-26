@@ -71,14 +71,10 @@ function PostLogContent() {
   if (!meeting) return null;
 
   return (
-    <AppShell
-      backHref={`/meetings/${id}`}
-      title="Post-log"
-      backLabel="모임 상세로 돌아가기"
-    >
+    <AppShell backHref={`/meetings/${id}`} title="Post-log">
       <div className="pt-1">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-[11px] font-bold text-gray-500 uppercase">
+          <span className="text-[20px] font-bold text-gray-700 uppercase">
             사진 ({photos.length})
           </span>
         </div>
@@ -104,24 +100,24 @@ function PostLogContent() {
             disabled={uploading}
             className="aspect-square rounded-xl bg-gray-50 border-[1.5px] border-dashed border-gray-300 flex items-center justify-center text-gray-400"
           >
-            <PlusIcon size={18} />
+            <PlusIcon size={24} />
           </button>
         </div>
 
-        <div className="text-[11px] font-bold text-gray-500 uppercase mb-2">
+        <div className="text-[20px] font-bold text-gray-700 uppercase mt-8 mb-2">
           한줄 후기 ({reviews.length})
         </div>
         <div className="flex flex-col gap-2.5 mb-3">
           {reviews.map((r) => (
             <div key={r.id} className="flex gap-2 items-start">
               <Avatar nickname={r.nickname} size="sm" />
-              <div className="bg-gray-50 rounded-2xl px-3 py-2 text-[12.5px] max-w-[80%]">
+              <div className="bg-gray-50 rounded-xl px-3 py-2 text-[12.5px] max-w-[80%]">
                 {r.text}
               </div>
             </div>
           ))}
           {reviews.length === 0 && (
-            <p className="text-[12.5px] text-gray-400 py-2">
+            <p className="text-[16px] text-gray-400 py-2">
               아직 후기가 없어요.
             </p>
           )}
@@ -129,7 +125,7 @@ function PostLogContent() {
 
         <div className="flex gap-2 mb-6">
           <input
-            className="flex-1 border-[1.4px] border-gray-200 rounded-xl px-3.5 py-3 text-[13.5px] outline-none focus:border-mint-300"
+            className="flex-1 border-[1.4px] border-gray-200 rounded-xl px-3.5 py-3 text-[18px] outline-none focus:border-mint-300"
             placeholder="후기를 남겨보세요"
             value={reviewText}
             onChange={(e) => setReviewText(e.target.value)}
@@ -138,20 +134,20 @@ function PostLogContent() {
           <button
             onClick={handleReview}
             disabled={posting}
-            className="bg-mint-300 text-white font-bold text-[13px] rounded-xl px-[18px] disabled:opacity-50"
+            className="bg-mint-300 text-white text-[18px] rounded-xl px-[18px] disabled:opacity-50"
           >
             등록
           </button>
         </div>
 
         {meeting.status === "active" && meeting.ownerId === user?.uid && (
-          <div className="bg-mint-50 border border-mint-100 rounded-2xl p-3.5 flex justify-between items-center mb-24">
-            <span className="text-[12px] text-gray-700">
+          <div className="bg-mint-50 border border-mint-100 rounded-xl p-3.5 flex justify-between items-center mb-24">
+            <span className="text-[18px] text-gray-700">
               사진과 후기가 다 모였다면
             </span>
             <button
               onClick={() => router.push(`/meetings/${id}/summary`)}
-              className="text-[11.5px] font-bold text-white bg-gray-900 rounded-full px-3.5 py-2"
+              className="text-[16px] text-white bg-gray-900 rounded-full px-3 py-1"
             >
               모임 종료하기
             </button>

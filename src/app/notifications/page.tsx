@@ -4,8 +4,17 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import RequireAuth from "@/components/RequireAuth";
-import { BellIcon, CheckIcon, ImageIcon, UsersIcon, WalletIcon } from "@/components/icons";
-import { subscribeNotifications, markAllNotificationsRead } from "@/lib/notifications";
+import {
+  BellIcon,
+  CheckIcon,
+  ImageIcon,
+  UsersIcon,
+  WalletIcon,
+} from "@/components/icons";
+import {
+  subscribeNotifications,
+  markAllNotificationsRead,
+} from "@/lib/notifications";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { NotificationItem } from "@/types";
 
@@ -22,13 +31,29 @@ function timeAgo(ts: number) {
 function iconFor(type: NotificationItem["type"]) {
   switch (type) {
     case "settlement_request":
-      return { icon: <WalletIcon size={17} />, bg: "bg-mint-50", fg: "text-mint-500" };
+      return {
+        icon: <WalletIcon size={17} />,
+        bg: "bg-mint-50",
+        fg: "text-mint-500",
+      };
     case "settlement_done":
-      return { icon: <CheckIcon size={17} />, bg: "bg-success-bg", fg: "text-success-d" };
+      return {
+        icon: <CheckIcon size={17} />,
+        bg: "bg-success-bg",
+        fg: "text-success-d",
+      };
     case "invite":
-      return { icon: <UsersIcon size={17} />, bg: "bg-gray-50", fg: "text-gray-600" };
+      return {
+        icon: <UsersIcon size={17} />,
+        bg: "bg-gray-50",
+        fg: "text-gray-600",
+      };
     default:
-      return { icon: <ImageIcon size={17} />, bg: "bg-gray-50", fg: "text-gray-600" };
+      return {
+        icon: <ImageIcon size={17} />,
+        bg: "bg-gray-50",
+        fg: "text-gray-600",
+      };
   }
 }
 
@@ -52,9 +77,9 @@ function NotificationsContent() {
         {items.length === 0 && (
           <div className="text-center py-20">
             <div className="w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-3 text-gray-300">
-              <BellIcon size={22} />
+              <BellIcon size={26} />
             </div>
-            <p className="text-[13px] text-gray-400">아직 알림이 없어요.</p>
+            <p className="text-[20px] text-gray-400">아직 알림이 없어요.</p>
           </div>
         )}
         {items.map((n) => {
@@ -65,14 +90,20 @@ function NotificationsContent() {
               href={n.meetingId ? `/meetings/${n.meetingId}/bill-log` : "/home"}
               className="flex items-center gap-2.5 py-2.5 border-b border-gray-100"
             >
-              <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center flex-none ${bg} ${fg}`}>
+              <div
+                className={`w-9 h-9 rounded-[10px] flex items-center justify-center flex-none ${bg} ${fg}`}
+              >
                 {icon}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[13.5px] font-semibold">{n.title}</div>
-                <div className="text-[11.5px] text-gray-500 mt-0.5">{timeAgo(n.createdAt)}</div>
+                <div className="text-[11.5px] text-gray-500 mt-0.5">
+                  {timeAgo(n.createdAt)}
+                </div>
               </div>
-              {!n.read && <span className="w-1.5 h-1.5 bg-mint-300 rounded-full flex-none" />}
+              {!n.read && (
+                <span className="w-1.5 h-1.5 bg-mint-300 rounded-full flex-none" />
+              )}
             </Link>
           );
         })}

@@ -32,7 +32,7 @@ export default function SignupPage() {
     setLoading(true);
     try {
       await signUpWithEmail(email, password, nickname.trim());
-      router.push("/home");
+      router.push("/onboarding");
     } catch (err) {
       setError(authErrorMessage(err));
     } finally {
@@ -57,14 +57,14 @@ export default function SignupPage() {
     <AppShell backHref="/">
       <div className="pt-2">
         <h1 className="text-[22px] font-bold">회원가입</h1>
-        <p className="text-[13px] text-gray-500 mt-1.5 mb-6">
+        <p className="text-[17px] text-gray-500 mt-1.5 mb-6">
           이메일로 가입하거나 구글 계정으로 빠르게 시작하세요
         </p>
 
         <button
           onClick={handleGoogle}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2.5 border-[1.4px] border-gray-200 rounded-2xl py-3.5 text-[14.5px] font-bold text-gray-800 mb-5 disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2.5 border-[1.4px] border-gray-200 rounded-xl py-3.5 text-[14.5px] font-bold text-gray-800 mb-5 disabled:opacity-50"
         >
           <GoogleIcon size={18} />
           구글로 계속하기
@@ -101,7 +101,7 @@ export default function SignupPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
           {error && (
-            <p className="text-[12.5px] text-error-d mb-3 -mt-1">{error}</p>
+            <p className="text-[16px] text-error-d mb-3 -mt-1">{error}</p>
           )}
           <Button
             type="submit"
@@ -109,11 +109,11 @@ export default function SignupPage() {
             disabled={!canSubmit}
             className="mt-2"
           >
-            가입하고 시작하기
+            시작하기
           </Button>
         </form>
 
-        <div className="text-center text-[12px] mt-5">
+        <div className="text-center text-[16px] mt-5">
           <span className="text-gray-400">이미 계정이 있나요? </span>
           <Link href="/login" className="font-bold text-gray-900">
             로그인

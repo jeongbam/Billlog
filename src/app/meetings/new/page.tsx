@@ -26,10 +26,7 @@ function NewMeetingContent() {
   const [error, setError] = useState("");
 
   const canSubmit =
-    title.trim().length > 0 &&
-    !!startDate &&
-    !!endDate &&
-    endDate >= startDate;
+    title.trim().length > 0 && !!startDate && !!endDate && endDate >= startDate;
 
   function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -56,7 +53,7 @@ function NewMeetingContent() {
           place: place.trim(),
           coverImage: null,
         },
-        user
+        user,
       );
       if (coverFile) {
         const url = await uploadImage(`meetings/${meetingId}/cover`, coverFile);
@@ -87,17 +84,21 @@ function NewMeetingContent() {
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
-          className="w-full aspect-[16/9] rounded-2xl mb-5 flex flex-col items-center justify-center gap-1.5 text-gray-400 overflow-hidden"
+          className="w-full aspect-[16/9] rounded-xl mb-5 flex flex-col items-center justify-center gap-1.5 text-gray-400 overflow-hidden"
           style={
             coverPreview
-              ? { backgroundImage: `url(${coverPreview})`, backgroundSize: "cover", backgroundPosition: "center" }
+              ? {
+                  backgroundImage: `url(${coverPreview})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }
               : undefined
           }
         >
           {!coverPreview && (
-            <div className="bg-gray-50 border-[1.5px] border-dashed border-gray-300 w-full h-full rounded-2xl flex flex-col items-center justify-center gap-1.5">
+            <div className="bg-gray-50 border-[1.5px] border-dashed border-gray-300 w-full h-full rounded-xl flex flex-col items-center justify-center gap-1.5">
               <ImageIcon size={22} />
-              <span className="text-[12px]">커버 이미지 추가 (선택)</span>
+              <span className="text-[16px]">커버 이미지 추가 (선택)</span>
             </div>
           )}
         </button>
@@ -139,7 +140,10 @@ function NewMeetingContent() {
         {error && <p className="text-[12.5px] text-error-d mb-2">{error}</p>}
 
         <div className="text-center mt-2">
-          <Link href="/join" className="text-[12px] text-gray-400 font-semibold">
+          <Link
+            href="/join"
+            className="text-[16px] text-gray-400 font-semibold"
+          >
             이미 초대받았나요? 코드로 참여하기
           </Link>
         </div>

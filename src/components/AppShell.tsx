@@ -12,6 +12,7 @@ import {
   PlusIcon,
   UserIcon,
 } from "./icons";
+import Image from "next/image";
 
 export function AppShell({
   title,
@@ -55,19 +56,23 @@ export function AppShell({
                 aria-label="뒤로가기"
                 className="text-gray-800"
               >
-                <ChevronLeftIcon size={22} />
+                <ChevronLeftIcon size={24} />
               </button>
             )}
             <div className="flex-1 min-w-0">
               {logo ? (
-                <span className="text-[20px] font-extrabold text-mint-500 tracking-tight">
-                  Billlog
-                </span>
+                <Image
+                  src="/logo.svg"
+                  alt="Billlog"
+                  width={80}
+                  height={10}
+                  priority
+                />
               ) : (
                 <>
-                  <div className="text-[17px] font-bold truncate">{title}</div>
+                  <div className="text-[22px] font-bold truncate">{title}</div>
                   {backLabel && (
-                    <div className="text-[12px] text-gray-400 font-semibold">
+                    <div className="text-[16px] text-gray-400 font-semibold">
                       {backLabel}
                     </div>
                   )}
@@ -76,7 +81,7 @@ export function AppShell({
             </div>
             {bell && (
               <Link href="/notifications" className="relative text-gray-800">
-                <BellIcon size={22} />
+                <BellIcon size={26} />
                 {hasUnread && (
                   <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full border border-white bg-error" />
                 )}
@@ -104,36 +109,36 @@ export function AppShell({
               border-gray-100
               bg-white
               pt-2
-              pb-[calc(env(safe-area-inset-bottom)+24px)]
+              pb-[calc(env(safe-area-inset-bottom)+20px)]
               shadow-[0_-2px_10px_rgba(0,0,0,0.06)]
             "
           >
             <Link
               href="/home"
-              className={`flex flex-col items-center gap-1 text-[10.5px] font-semibold w-[74px] ${
+              className={`flex flex-col items-center gap-1 text-[14px] font-semibold w-[74px] ${
                 pathname?.startsWith("/home")
                   ? "text-mint-500"
                   : "text-gray-400"
               }`}
             >
-              <HomeIcon size={21} />홈
+              <HomeIcon size={24} />홈
             </Link>
             <Link
               href="/meetings/new"
               className="flex items-center justify-center w-[50px] h-[50px] rounded-full bg-gray-900 text-white -mt-6 shadow-lg"
               aria-label="모임 만들기"
             >
-              <PlusIcon size={20} />
+              <PlusIcon size={24} />
             </Link>
             <Link
               href="/mypage"
-              className={`flex flex-col items-center gap-1 text-[10.5px] font-semibold w-[74px] ${
+              className={`flex flex-col items-center gap-1 text-[14px] font-semibold w-[74px] ${
                 pathname?.startsWith("/mypage")
                   ? "text-mint-500"
                   : "text-gray-400"
               }`}
             >
-              <UserIcon size={21} />
+              <UserIcon size={24} />
               마이페이지
             </Link>
           </nav>

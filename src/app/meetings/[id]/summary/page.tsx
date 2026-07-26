@@ -5,7 +5,12 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import RequireAuth from "@/components/RequireAuth";
 import { Badge, Button } from "@/components/ui";
-import { endMeeting, subscribeMeeting, subscribePhotos, subscribeReviews } from "@/lib/meetings";
+import {
+  endMeeting,
+  subscribeMeeting,
+  subscribePhotos,
+  subscribeReviews,
+} from "@/lib/meetings";
 import { subscribeReceipts } from "@/lib/receipts";
 import { formatCurrency, formatDateRange } from "@/lib/utils";
 import type { Meeting, Photo, Receipt, Review } from "@/types";
@@ -58,13 +63,18 @@ function SummaryContent() {
   }
 
   return (
-    <AppShell backHref={`/meetings/${id}`} title={isDone ? "모임 요약" : "모임 종료"}>
+    <AppShell
+      backHref={`/meetings/${id}`}
+      title={isDone ? "모임 요약" : "모임 종료"}
+    >
       <div className="pt-1 flex flex-col items-center">
-        <p className="text-[12px] text-gray-500 mb-4">
-          {isDone ? "🎉 모든 기록이 완료됐어요" : "종료하면 아래처럼 카드가 저장돼요"}
+        <p className="text-[16px] text-gray-500 mb-4">
+          {isDone
+            ? "🎉 모든 기록이 완료됐어요"
+            : "종료하면 아래처럼 카드가 저장돼요"}
         </p>
 
-        <div className="w-full bg-gray-900 rounded-2xl overflow-hidden">
+        <div className="w-full bg-gray-900 rounded-xl overflow-hidden">
           <div
             className="aspect-[16/8] opacity-90 checker-bg"
             style={
@@ -80,7 +90,9 @@ function SummaryContent() {
           <div className="p-[18px]">
             <div className="flex justify-between items-start">
               <div>
-                <div className="text-white text-[20px] font-bold">{meeting.title}</div>
+                <div className="text-white text-[20px] font-bold">
+                  {meeting.title}
+                </div>
                 <div className="text-gray-400 text-[11.5px] mt-1">
                   {formatDateRange(meeting.startDate, meeting.endDate)}
                 </div>
@@ -97,7 +109,7 @@ function SummaryContent() {
           </div>
         </div>
 
-        <p className="text-[12px] text-gray-500 mt-4 text-center leading-relaxed">
+        <p className="text-[16px] text-gray-500 mt-4 text-center leading-relaxed">
           이 카드는 홈의 <b className="text-gray-800">종료된 모임</b>에
           <br />
           차곡차곡 저장돼요
@@ -107,7 +119,11 @@ function SummaryContent() {
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pb-7 pt-2 bg-white flex gap-2">
         {isDone ? (
           <>
-            <Button variant="secondary" onClick={handleShare} className="flex-1">
+            <Button
+              variant="secondary"
+              onClick={handleShare}
+              className="flex-1"
+            >
               공유하기
             </Button>
             <Button onClick={() => router.push("/home")} className="flex-1">
@@ -124,11 +140,21 @@ function SummaryContent() {
   );
 }
 
-function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+function Stat({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
   return (
     <div>
       <div className="text-[10px] text-gray-400">{label}</div>
-      <div className={`text-[16px] font-bold mt-0.5 ${accent ? "text-mint-200" : "text-white"}`}>
+      <div
+        className={`text-[16px] font-bold mt-0.5 ${accent ? "text-mint-200" : "text-white"}`}
+      >
         {value}
       </div>
     </div>

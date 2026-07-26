@@ -36,8 +36,10 @@ function JoinContent() {
   return (
     <AppShell backHref="/home" title="모임 참여">
       <div className="flex flex-col items-center justify-center pt-20 text-center">
-        <p className="text-[14px] text-gray-600 mb-3">초대받은 모임의 코드예요</p>
-        <div className="w-full bg-mint-50 border border-mint-100 rounded-2xl p-4 text-center text-[22px] font-bold tracking-[0.3em] text-mint-500 mb-4">
+        <p className="text-[18px] text-gray-600 mb-3">
+          초대받은 모임의 코드예요
+        </p>
+        <div className="w-full bg-mint-50 border border-mint-100 rounded-xl p-4 text-center text-[22px] font-bold tracking-[0.3em] text-mint-500 mb-4">
           {params.code?.toUpperCase()}
         </div>
         {error && <p className="text-[12.5px] text-error-d mb-2">{error}</p>}

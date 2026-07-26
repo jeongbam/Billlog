@@ -12,12 +12,13 @@ import { useAuthStore } from "@/store/useAuthStore";
 function OnboardingContent() {
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
+  const setUser = useAuthStore((s) => s.setUser);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [nickname, setNickname] = useState(user?.nickname ?? "");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
-    user?.photoURL ?? null
+    user?.photoURL ?? null,
   );
   const [loading, setLoading] = useState(false);
 
@@ -38,7 +39,15 @@ function OnboardingContent() {
       if (photoFile) {
         photoURL = await uploadImage(`users/${user.uid}/avatar`, photoFile);
       }
-      await updateUserProfile(user.uid, { nickname: nickname.trim(), photoURL });
+      await updateUserProfile(user.uid, {
+        nickname: nickname.trim(),
+        photoURL,
+      });
+      setUser({
+        ...user,
+        nickname: nickname.trim(),
+        photoURL,
+      });
       router.push("/home");
     } finally {
       setLoading(false);
@@ -65,11 +74,15 @@ function OnboardingContent() {
             onChange={handlePhotoChange}
           />
           <button onClick={() => fileRef.current?.click()}>
-            <Avatar nickname={nickname || "?"} photoURL={photoPreview} size="lg" />
+            <Avatar
+              nickname={nickname || "?"}
+              photoURL={photoPreview}
+              size="lg"
+            />
           </button>
           <button
             onClick={() => fileRef.current?.click()}
-            className="text-[12px] font-bold text-mint-500 mt-2.5"
+            className="text-[16px] font-bold text-mint-500 mt-2.5"
           >
             프로필 사진 바꾸기
           </button>

@@ -1,9 +1,15 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Ownglyph PDH";
+  src: url("/fonts/OwnglyphPDH.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --font-sans:
-    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
-    sans-serif;
+  --font-sans: "Ownglyph PDH", -apple-system, BlinkMacSystemFont, sans-serif;
 
   --color-mint-50: #f0f7ff;
   --color-mint-100: #ccddef;
@@ -31,6 +37,10 @@
   --color-error: #ff5c4e;
   --color-error-d: #c23b2e;
   --color-error-bg: #ffecea;
+}
+
+html {
+  font-size: 22px;
 }
 
 html,

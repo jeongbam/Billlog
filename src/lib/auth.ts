@@ -7,14 +7,19 @@ import {
   updateProfile,
   type User,
 } from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { auth, db, googleProvider } from "./firebase";
 import type { AppUser } from "@/types";
 
-/** Creates the users/{uid} Firestore document the first time we see a user. */
 export async function ensureUserDoc(
   user: User,
-  extra?: Partial<Pick<AppUser, "nickname">>
+  extra?: Partial<Pick<AppUser, "nickname">>,
 ): Promise<AppUser> {
   const ref = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
@@ -38,7 +43,7 @@ export async function ensureUserDoc(
 export async function signUpWithEmail(
   email: string,
   password: string,
-  nickname: string
+  nickname: string,
 ) {
   const cred = await createUserWithEmailAndPassword(auth, email, password);
   await updateProfile(cred.user, { displayName: nickname });
@@ -50,7 +55,6 @@ export async function signInWithEmail(email: string, password: string) {
   return ensureUserDoc(cred.user);
 }
 
-/** Returns the resolved profile plus whether this was the user's very first sign-in. */
 export async function signInWithGoogle(): Promise<{
   user: AppUser;
   isNewUser: boolean;
@@ -63,9 +67,16 @@ export async function signInWithGoogle(): Promise<{
 
 export async function updateUserProfile(
   uid: string,
-  data: Partial<Pick<AppUser, "nickname" | "photoURL">>
+  data: Partial<Pick<AppUser, "nickname" | "photoURL">>,
 ) {
   await updateDoc(doc(db, "users", uid), data);
+
+  if (auth.currentUser) {
+    await updateProfile(auth.currentUser, {
+      displayName: data.nickname ?? auth.currentUser.displayName,
+      photoURL: data.photoURL ?? auth.currentUser.photoURL,
+    });
+  }
 }
 
 export async function signOutUser() {

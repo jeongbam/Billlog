@@ -117,16 +117,16 @@ function WizardContent() {
 
   return (
     <AppShell>
-      <div className="flex items-center justify-between pt-1 mb-1">
+      <div className="flex items-center justify-between pt-3 mb-6">
         <button
           onClick={() => (step > 1 ? setStep(step - 1) : handleClose())}
-          className="text-[13px] font-semibold text-gray-500"
+          className="text-[20px] font-semibold text-gray-500"
         >
           ‹ {step > 1 ? "이전" : "취소"}
         </button>
-        <span className="text-[15.5px] font-bold">영수증 추가</span>
+        <span className="text-[20px] font-bold">영수증 추가</span>
         <button onClick={handleClose} className="text-gray-500">
-          <XIcon size={20} />
+          <XIcon size={24} />
         </button>
       </div>
 
@@ -147,21 +147,21 @@ function WizardContent() {
 
       {step === 1 && (
         <div>
-          <p className="text-[12px] font-bold text-mint-500 mb-1">
-            1 / 3 · 항목 입력
+          <p className="text-[18px] font-bold text-mint-500 mb-1">
+            항목 입력 (1 / 3)
           </p>
-          <h2 className="text-[18px] font-bold mb-4">
+          <h2 className="text-[20px] text-gray-700 font-bold mt-10 mb-4">
             얼마를 썼는지 입력해주세요
           </h2>
 
           {items.map((it) => (
             <div
               key={it.id}
-              className="flex items-center gap-3 px-4 py-4 border-[1.4px] border-gray-100 rounded-2xl mb-2.5"
+              className="flex items-center gap-0 px-4 py-3 border-[1.4px] border-gray-100 rounded-xl mb-2.5"
             >
               <input
-                className="flex-1 text-[14.5px] font-medium outline-none min-w-0"
-                placeholder="항목 이름 (예: 삼겹살 2인분)"
+                className="flex-1 text-[18px] font-bold outline-none min-w-0"
+                placeholder="항목 이름 (예: 아메리카노)"
                 value={it.name}
                 onChange={(e) => updateItemName(it.id, e.target.value)}
               />
@@ -169,7 +169,7 @@ function WizardContent() {
                 type="number"
                 inputMode="numeric"
                 placeholder="0"
-                className="w-24 text-right text-[14.5px] font-bold outline-none"
+                className="w-24 text-right text-[18px] font-bold outline-none"
                 value={it.amount || ""}
                 onChange={(e) =>
                   updateItemAmount(it.id, Number(e.target.value) || 0)
@@ -180,21 +180,24 @@ function WizardContent() {
                 disabled={items.length === 1}
                 className="text-gray-400 disabled:opacity-30"
               >
-                <XIcon size={14} />
+                <XIcon size={20} />
               </button>
             </div>
           ))}
 
           <button
             onClick={addManualItem}
-            className="w-full py-3 rounded-xl border-[1.4px] border-dashed border-gray-300 text-gray-500 text-[13px] font-semibold mb-4"
+            className="w-full py-3 rounded-xl border-[1.4px] border-dashed border-mint-500 text-mint-500 text-[18px] font-semibold mb-4"
           >
             + 항목 추가
           </button>
 
-          <div className="bg-gray-900 rounded-2xl px-4 py-4 flex justify-between items-center mb-5">
-            <span className="text-white text-[15px] font-bold">합계</span>
-            <span className="text-white text-[19px] font-bold">
+          <div className="flex justify-between items-center bg-white text-gray-500 mt-4 mb-4">
+            - - - - - - - - - - - - - - - - - - - -
+          </div>
+          <div className="rounded-xl px-4 py-3 flex justify-between items-center mb-5">
+            <span className="text-gray-700 text-[18px] font-bold">합계</span>
+            <span className="text-gray-900 text-[20px] font-bold">
               {formatCurrency(total)}
             </span>
           </div>
@@ -207,10 +210,12 @@ function WizardContent() {
 
       {step === 2 && (
         <div>
-          <p className="text-[12px] font-bold text-mint-500 mb-1">
-            2 / 3 · 인원 태그 &amp; 정산 방식
+          <p className="text-[18px] font-bold text-mint-500 mb-10">
+            인원 태그 &amp; 정산 방식 (2 / 3)
           </p>
-          <h2 className="text-[18px] font-bold mb-3.5">누구와 나눌까요?</h2>
+          <h2 className="text-[20px] text-gray-700 font-bold mb-4">
+            누구와 나눌까요?
+          </h2>
           <div className="flex flex-wrap gap-2 mb-4">
             {members.map((m) => (
               <Chip
@@ -223,12 +228,12 @@ function WizardContent() {
             ))}
           </div>
 
-          <div className="text-[11px] font-bold text-gray-500 uppercase mb-2">
+          <div className="text-[20px] font-bold text-gray-700 uppercase mt-8 mb-2">
             정산 방식
           </div>
           <div className="flex gap-2 mb-4">
             <button
-              className={`flex-1 py-2.5 rounded-full text-[13px] font-semibold border-[1.4px] ${
+              className={`flex-1 py-2 rounded-full text-[18px] font-semibold border-[1.4px] ${
                 splitMethod === "equal"
                   ? "bg-mint-50 border-mint-300 text-mint-500"
                   : "border-gray-200 text-gray-600"
@@ -238,7 +243,7 @@ function WizardContent() {
               N분의 1
             </button>
             <button
-              className={`flex-1 py-2.5 rounded-full text-[13px] font-semibold border-[1.4px] ${
+              className={`flex-1 py-2.5 rounded-full text-[17px] font-semibold border-[1.4px] ${
                 splitMethod === "custom"
                   ? "bg-mint-50 border-mint-300 text-mint-500"
                   : "border-gray-200 text-gray-600"
@@ -256,7 +261,7 @@ function WizardContent() {
             </button>
           </div>
 
-          <div className="text-[11px] font-bold text-gray-500 uppercase mb-2">
+          <div className="text-[20px] text-gray-700 font-bold uppercase mt-8 mb-2">
             인당 정산 금액 ({participantIds.length}명)
           </div>
           <Card>
@@ -277,7 +282,7 @@ function WizardContent() {
                   }`}
                 >
                   <Avatar nickname={m?.nickname ?? "?"} size="sm" />
-                  <div className="flex-1 text-[13.5px] font-semibold">
+                  <div className="flex-1 text-[18px] font-semibold">
                     {m?.nickname}
                   </div>
                   {splitMethod === "custom" ? (
@@ -290,10 +295,10 @@ function WizardContent() {
                           [uid]: Number(e.target.value) || 0,
                         }))
                       }
-                      className="w-24 text-right text-[13.5px] font-bold outline-none border-b border-gray-200"
+                      className="w-24 text-right text-[18px] font-bold outline-none border-b border-gray-200"
                     />
                   ) : (
-                    <span className="text-[13.5px] font-bold">
+                    <span className="text-[18px] font-bold">
                       {formatCurrency(amount)}
                     </span>
                   )}
@@ -304,7 +309,7 @@ function WizardContent() {
 
           <div className="mt-4">
             <Button onClick={goStep3} disabled={participantIds.length === 0}>
-              다음 · 요청 검토
+              다음
             </Button>
           </div>
         </div>
@@ -312,10 +317,10 @@ function WizardContent() {
 
       {step === 3 && (
         <div>
-          <p className="text-[12px] font-bold text-mint-500 mb-1">
-            3 / 3 · 최종 확인
+          <p className="text-[18px] font-bold text-mint-500 mb-1">
+            최종 확인 (3 / 3)
           </p>
-          <h2 className="text-[18px] font-bold mb-3.5">
+          <h2 className="text-[20px] text-gray-700 font-bold mt-10 mb-2">
             이대로 정산을 요청할까요?
           </h2>
           <Card className="mb-3.5">
@@ -327,7 +332,7 @@ function WizardContent() {
             />
           </Card>
 
-          <div className="text-[11px] font-bold text-gray-500 uppercase mb-2">
+          <div className="text-[20px] font-bold text-gray-700 uppercase mt-8 mb-2">
             정산 요청 받을 사람
           </div>
           <Card>
@@ -356,7 +361,7 @@ function WizardContent() {
 
           <div className="mt-4">
             <Button onClick={handleSubmit} loading={submitting}>
-              정산 요청 보내고 Bill-log 홈으로
+              정산 요청 보내기
             </Button>
           </div>
         </div>
@@ -376,7 +381,7 @@ function Row({
 }) {
   return (
     <div className="flex justify-between py-1">
-      <span className="text-[12px] text-gray-500">{label}</span>
+      <span className="text-[16px] text-gray-500">{label}</span>
       <span className={`text-[13.5px] ${bold ? "font-bold" : "font-semibold"}`}>
         {value}
       </span>

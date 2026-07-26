@@ -38,8 +38,10 @@ function JoinEntryContent() {
   return (
     <AppShell backHref="/home" title="초대 코드로 참여">
       <div className="pt-4">
-        <h1 className="text-[18px] font-bold mb-1.5">참여 코드를 입력해주세요</h1>
-        <p className="text-[13px] text-gray-500 mb-6">
+        <h1 className="text-[18px] font-bold mb-1.5">
+          참여 코드를 입력해주세요
+        </h1>
+        <p className="text-[17px] text-gray-500 mb-6">
           모임장에게 받은 6자리 코드를 입력하면 바로 참여돼요
         </p>
 
@@ -51,9 +53,11 @@ function JoinEntryContent() {
           }}
           maxLength={8}
           placeholder="예) XK29FQ"
-          className="w-full bg-mint-50 border border-mint-100 rounded-2xl p-4 text-center text-[22px] font-bold tracking-[0.3em] text-mint-500 outline-none focus:ring-4 focus:ring-mint-100"
+          className="w-full bg-mint-50 border border-mint-100 rounded-xl p-4 text-center text-[22px] font-bold tracking-[0.3em] text-mint-500 outline-none focus:ring-4 focus:ring-mint-100"
         />
-        {error && <p className="text-[12.5px] text-error-d mt-3 text-center">{error}</p>}
+        {error && (
+          <p className="text-[12.5px] text-error-d mt-3 text-center">{error}</p>
+        )}
       </div>
 
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pb-7 pt-2 bg-white">

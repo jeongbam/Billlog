@@ -69,7 +69,7 @@ function MeetingHubContent() {
   if (meeting === null) {
     return (
       <AppShell backHref="/home" title="모임 상세">
-        <p className="text-center text-gray-400 text-[13px] pt-24">
+        <p className="text-center text-gray-400 text-[20px] pt-24">
           모임을 찾을 수 없어요.
         </p>
       </AppShell>
@@ -120,7 +120,7 @@ function MeetingHubContent() {
   return (
     <AppShell backHref="/home" title="모임 상세">
       <div className="pt-1">
-        <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden mb-4">
+        <div className="bg-white border border-gray-100 rounded-xl overflow-hidden mb-4">
           <div
             className="checker-bg aspect-[16/8]"
             style={
@@ -135,11 +135,11 @@ function MeetingHubContent() {
           />
           <div className="p-3.5">
             <div className="flex justify-between items-start">
-              <div className="text-[18px] font-bold">{meeting.title}</div>
+              <div className="text-[20px] font-bold">{meeting.title}</div>
               {meeting.ownerId === user?.uid && (
                 <button
                   onClick={handleDelete}
-                  className="text-[11px] text-gray-400 border border-gray-200 rounded-full px-2.5 py-1"
+                  className="text-[14px] text-gray-400 border border-gray-200 rounded-full px-2.5 py-1"
                 >
                   삭제
                 </button>
@@ -147,13 +147,13 @@ function MeetingHubContent() {
             </div>
             <div className="flex items-center gap-2 mt-2 text-gray-600">
               <CalendarIcon size={15} />
-              <span className="text-[12px]">
+              <span className="text-[18px]">
                 {formatDateRange(meeting.startDate, meeting.endDate)}
               </span>
             </div>
             <div className="flex items-center gap-2 mt-1.5 text-gray-600">
               <PinIcon size={15} />
-              <span className="text-[12px]">
+              <span className="text-[18px]">
                 {meeting.place || "장소 미정"}
               </span>
             </div>
@@ -162,7 +162,7 @@ function MeetingHubContent() {
               className="flex justify-between items-center mt-2.5 w-full"
             >
               <AvatarStack members={members} />
-              <span className="text-[12px] font-bold text-mint-500">
+              <span className="text-[16px] font-bold text-mint-500">
                 멤버 보기
               </span>
             </button>
@@ -171,7 +171,7 @@ function MeetingHubContent() {
                 {members.map((m) => (
                   <span
                     key={m.uid}
-                    className="text-[11.5px] bg-gray-50 px-2.5 py-1 rounded-full text-gray-600"
+                    className="text-[16px] bg-gray-50 px-2.5 py-1 rounded-full text-gray-600"
                   >
                     {m.nickname}
                     {m.uid === meeting.ownerId && " · 모임장"}
@@ -189,7 +189,7 @@ function MeetingHubContent() {
         {meeting.status === "active" ? (
           <Link href={`/meetings/${meeting.id}/pre-log`}>
             <SectionRow
-              icon={<CalendarIcon size={21} />}
+              icon={<CalendarIcon size={24} />}
               title="Pre-log"
               badge={preStatus}
               desc={
@@ -202,7 +202,7 @@ function MeetingHubContent() {
         ) : (
           <div className="opacity-50 cursor-not-allowed">
             <SectionRow
-              icon={<CalendarIcon size={21} />}
+              icon={<CalendarIcon size={24} />}
               title="Pre-log"
               badge={preStatus}
               desc="모임이 종료되었습니다."
@@ -212,7 +212,7 @@ function MeetingHubContent() {
         {meeting.status === "active" ? (
           <Link href={`/meetings/${meeting.id}/bill-log`}>
             <SectionRow
-              icon={<ReceiptIcon size={21} />}
+              icon={<ReceiptIcon size={24} />}
               title="Bill-log"
               badge={billStatus}
               desc={
@@ -225,11 +225,10 @@ function MeetingHubContent() {
         ) : (
           <div className="opacity-50 cursor-not-allowed">
             <SectionRow
-              icon={<ReceiptIcon size={21} />}
+              icon={<ReceiptIcon size={24} />}
               title="Bill-log"
               badge={billStatus}
               desc="모임이 종료되었습니다."
-              highlight
             />
           </div>
         )}
@@ -277,14 +276,12 @@ function SectionRow({
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="text-[15px] font-bold">{title}</span>
+          <span className="text-[18px] font-bold">{title}</span>
           <Badge variant={badge.variant}>{badge.text}</Badge>
         </div>
-        <div className="text-[11.5px] text-gray-500 mt-0.5 truncate">
-          {desc}
-        </div>
+        <div className="text-[14px] text-gray-500 mt-0.5 truncate">{desc}</div>
       </div>
-      <ChevronRightIcon size={16} className="text-gray-300 flex-none" />
+      <ChevronRightIcon size={21} className="text-gray-300 flex-none" />
     </div>
   );
 }

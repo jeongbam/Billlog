@@ -6,7 +6,11 @@ import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { GoogleIcon } from "@/components/icons";
 import { Button, Input } from "@/components/ui";
-import { authErrorMessage, signInWithEmail, signInWithGoogle } from "@/lib/auth";
+import {
+  authErrorMessage,
+  signInWithEmail,
+  signInWithGoogle,
+} from "@/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -48,15 +52,15 @@ export default function LoginPage() {
   return (
     <AppShell backHref="/">
       <div className="pt-2">
-        <h1 className="text-[22px] font-bold">로그인</h1>
-        <p className="text-[13px] text-gray-500 mt-1.5 mb-6">
+        <h1 className="text-[26px] font-bold">로그인</h1>
+        <p className="text-[17px] text-gray-500 mt-1.5 mb-6">
           다시 만나서 반가워요
         </p>
 
         <button
           onClick={handleGoogle}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2.5 border-[1.4px] border-gray-200 rounded-2xl py-3.5 text-[14.5px] font-bold text-gray-800 mb-5 disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2.5 border-[1.4px] border-gray-200 rounded-xl py-2 text-[18px] font-bold text-gray-800 mb-5 disabled:opacity-50"
         >
           <GoogleIcon size={18} />
           구글로 계속하기
@@ -64,7 +68,9 @@ export default function LoginPage() {
 
         <div className="flex items-center gap-3 mb-5">
           <div className="h-px bg-gray-100 flex-1" />
-          <span className="text-[11.5px] text-gray-400">또는 이메일로 로그인</span>
+          <span className="text-[15px] text-gray-400">
+            또는 이메일로 로그인
+          </span>
           <div className="h-px bg-gray-100 flex-1" />
         </div>
 
@@ -72,7 +78,7 @@ export default function LoginPage() {
           <Input
             label="이메일"
             type="email"
-            placeholder="you@example.com"
+            placeholder="billlog@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -86,12 +92,17 @@ export default function LoginPage() {
           {error && (
             <p className="text-[12.5px] text-error-d mb-3 -mt-1">{error}</p>
           )}
-          <Button type="submit" loading={loading} disabled={!canSubmit} className="mt-2">
+          <Button
+            type="submit"
+            loading={loading}
+            disabled={!canSubmit}
+            className="mt-2"
+          >
             로그인
           </Button>
         </form>
 
-        <div className="text-center text-[12px] mt-5">
+        <div className="text-center text-[16px] mt-5">
           <span className="text-gray-400">아직 계정이 없나요? </span>
           <Link href="/signup" className="font-bold text-gray-900">
             회원가입

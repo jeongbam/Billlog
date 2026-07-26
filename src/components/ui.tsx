@@ -31,7 +31,7 @@ export function Button({
   return (
     <button
       className={cx(
-        "w-full flex items-center justify-center gap-2 rounded-2xl py-4 text-[16px] font-bold transition-colors disabled:opacity-50",
+        "w-full flex items-center justify-center gap-2 rounded-xl py-2 text-[20px] transition-colors disabled:opacity-50",
         styles[variant],
         className,
       )}
@@ -53,13 +53,13 @@ export function Input({
   return (
     <label className="block mb-3.5">
       {label && (
-        <span className="block text-[12px] font-semibold text-gray-600 mb-1.5">
+        <span className="block text-[18px] font-semibold text-gray-600 mb-1.5">
           {label}
         </span>
       )}
       <input
         className={cx(
-          "w-full bg-white border-[1.4px] border-gray-200 rounded-xl px-3.5 py-3 text-[14.5px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-mint-300 focus:ring-4 focus:ring-mint-50",
+          "w-full bg-white border-[1.4px] border-gray-200 rounded-xl px-3.5 py-3 text-[18px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-mint-300 focus:ring-4 focus:ring-mint-50",
           className,
         )}
         {...rest}
@@ -76,7 +76,7 @@ export function Textarea({
   return (
     <label className="block mb-3.5">
       {label && (
-        <span className="block text-[12px] font-semibold text-gray-600 mb-1.5">
+        <span className="block text-[16px] font-semibold text-gray-600 mb-1.5">
           {label}
         </span>
       )}
@@ -103,7 +103,7 @@ export function Chip({
     <button
       type="button"
       className={cx(
-        "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-semibold border-[1.4px] whitespace-nowrap",
+        "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[16px] font-semibold border-[1.4px] whitespace-nowrap",
         active
           ? "bg-mint-50 text-mint-500 border-mint-300"
           : "bg-white text-gray-600 border-gray-200",
@@ -144,7 +144,7 @@ export function Badge({
   return (
     <span
       className={cx(
-        "inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-bold",
+        "inline-flex items-center gap-1 px-2 py-0.7 rounded-md text-[14px] font-bold",
         styles[variant],
       )}
     >
@@ -232,7 +232,7 @@ export function Card({
   return (
     <div
       className={cx(
-        "bg-white border border-gray-100 rounded-2xl p-3.5 shadow-[0_2px_10px_rgba(33,37,44,0.04)]",
+        "bg-white border border-gray-100 rounded-xl p-3.5 shadow-[0_2px_10px_rgba(33,37,44,0.04)]",
         className,
       )}
     >
