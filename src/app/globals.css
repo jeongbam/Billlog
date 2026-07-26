@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+
+  --color-mint-50: #f0f7ff;
+  --color-mint-100: #ccddef;
+  --color-mint-200: #aecbe7;
+  --color-mint-300: #68a5e1;
+  --color-mint-400: #3c8dde;
+  --color-mint-500: #1068c1;
+
+  --color-gray-50: #f1f4f9;
+  --color-gray-100: #e5eaf2;
+  --color-gray-200: #cdd3de;
+  --color-gray-300: #b3b9c6;
+  --color-gray-400: #9398a4;
+  --color-gray-500: #757a83;
+  --color-gray-600: #666a75;
+  --color-gray-700: #474b54;
+  --color-gray-800: #2c3037;
+  --color-gray-900: #212328;
+
+  --color-info: #36a6ff;
+  --color-success: #00e092;
+  --color-success-d: #04875c;
+  --color-success-bg: #defbf1;
+  --color-warning: #ffcf3a;
+  --color-error: #ff5c4e;
+  --color-error-d: #c23b2e;
+  --color-error-bg: #ffecea;
+}
+
+html,
+body {
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+  color: var(--color-gray-900);
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.checker-bg {
+  background-image:
+    linear-gradient(45deg, var(--color-gray-100) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-gray-100) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-gray-100) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-gray-100) 75%);
+  background-size: 14px 14px;
+  background-position:
+    0 0,
+    0 7px,
+    7px -7px,
+    -7px 0;
+  background-color: #fff;
+}

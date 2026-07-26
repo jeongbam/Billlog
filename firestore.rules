@@ -1,0 +1,56 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isMember(meetingId) {
+      return isSignedIn() &&
+        request.auth.uid in get(/databases/$(database)/documents/meetings/$(meetingId)).data.memberIds;
+    }
+
+    // users/{uid}
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == uid;
+      allow update: if isSignedIn() && request.auth.uid == uid;
+
+      match /notifications/{notifId} {
+        allow read, update, delete: if isSignedIn() && request.auth.uid == uid;
+        // written by other members of a shared meeting (e.g. settlement request/complete)
+        allow create: if isSignedIn();
+      }
+    }
+
+    // meetings/{meetingId}
+    match /meetings/{meetingId} {
+      // Any signed-in user can read a meeting doc directly — this is required so that
+      // someone who is NOT a member yet can look up a meeting by its invite/join code
+      // before joining. Meeting docs don't contain sensitive data beyond nicknames.
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == request.resource.data.ownerId;
+      // permissive update so "join by code" (which adds the joiner's own uid) works
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn() && request.auth.uid == resource.data.ownerId;
+
+      match /planItems/{itemId} {
+        allow read, write: if isMember(meetingId);
+      }
+      match /receipts/{receiptId} {
+        allow read, write: if isMember(meetingId);
+      }
+      match /settlements/{uid} {
+        allow read, write: if isMember(meetingId);
+      }
+      match /photos/{photoId} {
+        allow read, write: if isMember(meetingId);
+      }
+      match /reviews/{reviewId} {
+        allow read, write: if isMember(meetingId);
+      }
+    }
+  }
+}
