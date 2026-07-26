@@ -91,6 +91,7 @@ function PostLogContent() {
               className="aspect-square rounded-xl object-cover"
             />
           ))}
+
           <input
             ref={fileRef}
             type="file"
