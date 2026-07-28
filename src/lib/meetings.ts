@@ -1,5 +1,6 @@
 import {
   addDoc,
+  arrayRemove,
   arrayUnion,
   collection,
   deleteDoc,
@@ -15,6 +16,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { notifyMeetingMembers } from "./notifications";
 import { randomJoinCode, stripUndefined } from "./utils";
 import type { AppUser, Meeting, Photo, PlanItem, Review } from "@/types";
 
@@ -28,7 +30,7 @@ export async function createMeeting(
     place: string;
     coverImage: string | null;
   },
-  owner: AppUser
+  owner: AppUser,
 ): Promise<string> {
   const ref = await addDoc(col, {
     title: input.title,
@@ -50,7 +52,7 @@ export async function createMeeting(
 
 export function subscribeUserMeetings(
   uid: string,
-  cb: (meetings: Meeting[]) => void
+  cb: (meetings: Meeting[]) => void,
 ) {
   const q = query(col, where("memberIds", "array-contains", uid));
   return onSnapshot(q, (snap) => {
@@ -85,12 +87,17 @@ function toMeeting(id: string, data: DocumentData): Meeting {
 
 export async function joinMeetingByCode(
   code: string,
-  user: AppUser
+  user: AppUser,
 ): Promise<string | null> {
-  const q = query(col, where("joinCode", "==", code.trim().toUpperCase()), limit(1));
+  const q = query(
+    col,
+    where("joinCode", "==", code.trim().toUpperCase()),
+    limit(1),
+  );
   const snap = await getDocs(q);
   if (snap.empty) return null;
   const meetingDoc = snap.docs[0];
+  const existingMemberIds: string[] = meetingDoc.data().memberIds ?? [];
   await updateDoc(meetingDoc.ref, {
     memberIds: arrayUnion(user.uid),
     [`memberInfo.${user.uid}`]: {
@@ -98,6 +105,12 @@ export async function joinMeetingByCode(
       photoURL: user.photoURL,
     },
   });
+  await notifyMeetingMembers(
+    existingMemberIds,
+    "member_joined",
+    `${user.nickname} 님이 모임에 참여했어요`,
+    meetingDoc.id,
+  );
   return meetingDoc.id;
 }
 
@@ -117,14 +130,25 @@ export async function deleteMeeting(meetingId: string) {
 
 export async function addPlanItem(
   meetingId: string,
-  item: Omit<PlanItem, "id" | "createdAt">
+  item: Omit<PlanItem, "id" | "createdAt" | "pinned" | "likedBy">,
+  memberIds: string[],
+  actorNickname: string,
 ) {
   await addDoc(
     collection(db, "meetings", meetingId, "planItems"),
     stripUndefined({
       ...item,
+      pinned: false,
+      likedBy: [],
       createdAt: serverTimestamp(),
-    })
+    }),
+  );
+  await notifyMeetingMembers(
+    memberIds,
+    "plan_item_added",
+    `${actorNickname} 님이 새로운 계획을 등록했어요`,
+    meetingId,
+    item.createdBy,
   );
 }
 
@@ -132,13 +156,34 @@ export async function deletePlanItem(meetingId: string, itemId: string) {
   await deleteDoc(doc(db, "meetings", meetingId, "planItems", itemId));
 }
 
+export async function togglePlanItemPin(
+  meetingId: string,
+  itemId: string,
+  pinned: boolean,
+) {
+  await updateDoc(doc(db, "meetings", meetingId, "planItems", itemId), {
+    pinned,
+  });
+}
+
+export async function togglePlanItemLike(
+  meetingId: string,
+  itemId: string,
+  uid: string,
+  liked: boolean,
+) {
+  await updateDoc(doc(db, "meetings", meetingId, "planItems", itemId), {
+    likedBy: liked ? arrayUnion(uid) : arrayRemove(uid),
+  });
+}
+
 export function subscribePlanItems(
   meetingId: string,
-  cb: (items: PlanItem[]) => void
+  cb: (items: PlanItem[]) => void,
 ) {
   const q = query(
     collection(db, "meetings", meetingId, "planItems"),
-    orderBy("createdAt", "asc")
+    orderBy("createdAt", "asc"),
   );
   return onSnapshot(q, (snap) => {
     cb(
@@ -150,28 +195,47 @@ export function subscribePlanItems(
           title: data.title,
           url: data.url,
           content: data.content,
+          tag: data.tag ?? "etc",
+          pinned: data.pinned ?? false,
+          likedBy: data.likedBy ?? [],
           createdBy: data.createdBy,
           createdAt: data.createdAt?.toMillis?.() ?? Date.now(),
         } as PlanItem;
-      })
+      }),
     );
   });
 }
 
 /* ---------------- Post-log: photos & reviews ---------------- */
 
-export async function addPhoto(meetingId: string, url: string, uploaderId: string) {
+export async function addPhoto(
+  meetingId: string,
+  url: string,
+  uploaderId: string,
+  memberIds: string[],
+  actorNickname: string,
+) {
   await addDoc(collection(db, "meetings", meetingId, "photos"), {
     url,
     uploaderId,
     createdAt: serverTimestamp(),
   });
+  await notifyMeetingMembers(
+    memberIds,
+    "photo_added",
+    `${actorNickname} 님이 사진을 등록했어요`,
+    meetingId,
+    uploaderId,
+  );
 }
 
-export function subscribePhotos(meetingId: string, cb: (photos: Photo[]) => void) {
+export function subscribePhotos(
+  meetingId: string,
+  cb: (photos: Photo[]) => void,
+) {
   const q = query(
     collection(db, "meetings", meetingId, "photos"),
-    orderBy("createdAt", "desc")
+    orderBy("createdAt", "desc"),
   );
   return onSnapshot(q, (snap) => {
     cb(
@@ -183,7 +247,7 @@ export function subscribePhotos(meetingId: string, cb: (photos: Photo[]) => void
           uploaderId: data.uploaderId,
           createdAt: data.createdAt?.toMillis?.() ?? Date.now(),
         } as Photo;
-      })
+      }),
     );
   });
 }
@@ -192,7 +256,8 @@ export async function addReview(
   meetingId: string,
   text: string,
   uid: string,
-  nickname: string
+  nickname: string,
+  memberIds: string[],
 ) {
   await addDoc(collection(db, "meetings", meetingId, "reviews"), {
     text,
@@ -200,12 +265,22 @@ export async function addReview(
     nickname,
     createdAt: serverTimestamp(),
   });
+  await notifyMeetingMembers(
+    memberIds,
+    "review_added",
+    `${nickname} 님이 후기를 남겼어요`,
+    meetingId,
+    uid,
+  );
 }
 
-export function subscribeReviews(meetingId: string, cb: (reviews: Review[]) => void) {
+export function subscribeReviews(
+  meetingId: string,
+  cb: (reviews: Review[]) => void,
+) {
   const q = query(
     collection(db, "meetings", meetingId, "reviews"),
-    orderBy("createdAt", "asc")
+    orderBy("createdAt", "asc"),
   );
   return onSnapshot(q, (snap) => {
     cb(
@@ -218,7 +293,7 @@ export function subscribeReviews(meetingId: string, cb: (reviews: Review[]) => v
           nickname: data.nickname,
           createdAt: data.createdAt?.toMillis?.() ?? Date.now(),
         } as Review;
-      })
+      }),
     );
   });
 }
