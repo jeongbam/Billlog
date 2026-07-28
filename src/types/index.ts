@@ -23,12 +23,34 @@ export interface Meeting {
   createdAt: number;
 }
 
+export type PlanItemTag =
+  | "restaurant"
+  | "cafe"
+  | "lodging"
+  | "activity"
+  | "transport"
+  | "shopping"
+  | "etc";
+
+export const PLAN_ITEM_TAGS: { value: PlanItemTag; label: string }[] = [
+  { value: "restaurant", label: "식당" },
+  { value: "cafe", label: "카페" },
+  { value: "lodging", label: "숙소" },
+  { value: "activity", label: "액티비티" },
+  { value: "transport", label: "교통" },
+  { value: "shopping", label: "쇼핑" },
+  { value: "etc", label: "기타" },
+];
+
 export interface PlanItem {
   id: string;
   type: "link" | "memo";
   title: string;
   url?: string;
   content?: string;
+  tag: PlanItemTag;
+  pinned: boolean;
+  likedBy: string[];
   createdBy: string;
   createdAt: number;
 }
@@ -81,7 +103,11 @@ export type NotificationType =
   | "settlement_request"
   | "settlement_done"
   | "invite"
-  | "photo_added";
+  | "photo_added"
+  | "member_joined"
+  | "plan_item_added"
+  | "receipt_added"
+  | "review_added";
 
 export interface NotificationItem {
   id: string;
