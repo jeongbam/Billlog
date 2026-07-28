@@ -89,7 +89,7 @@ export default function SignupPage() {
           <Input
             label="이메일"
             type="email"
-            placeholder="you@example.com"
+            placeholder="billlog@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
