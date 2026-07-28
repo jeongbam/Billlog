@@ -7,7 +7,7 @@ import type {
   ReactNode,
 } from "react";
 
-/* ---------------- Button ---------------- */
+// 버튼
 
 type ButtonVariant = "primary" | "secondary" | "dark" | "ghost";
 
@@ -43,7 +43,7 @@ export function Button({
   );
 }
 
-/* ---------------- Input ---------------- */
+// 인풋
 
 export function Input({
   label,
@@ -91,7 +91,7 @@ export function Textarea({
   );
 }
 
-/* ---------------- Chip ---------------- */
+// 칩
 
 export function Chip({
   active,
@@ -116,7 +116,7 @@ export function Chip({
   );
 }
 
-/* ---------------- Badge ---------------- */
+// 뱃지
 
 type BadgeVariant =
   | "dark"
@@ -153,7 +153,7 @@ export function Badge({
   );
 }
 
-/* ---------------- Avatar ---------------- */
+// 아바타
 
 export function Avatar({
   nickname,
@@ -220,7 +220,7 @@ export function AvatarStack({
   );
 }
 
-/* ---------------- Card ---------------- */
+// 카드
 
 export function Card({
   className,
@@ -260,5 +260,69 @@ export function Spinner({ className }: { className?: string }) {
         className,
       )}
     />
+  );
+}
+
+// 확인 모달
+
+export function ConfirmModal({
+  open,
+  title = "삭제하시겠습니까?",
+  description,
+  confirmLabel = "삭제",
+  cancelLabel = "취소",
+  danger = true,
+  loading = false,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean;
+  title?: string;
+  description?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  danger?: boolean;
+  loading?: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+      <div
+        className="absolute inset-0 bg-black/40"
+        onClick={loading ? undefined : onCancel}
+      />
+      <div className="relative w-[85%] max-w-sm bg-white rounded-2xl p-5 shadow-xl">
+        <div className="text-[20px] font-bold text-gray-900 mb-1.5 text-center">
+          {title}
+        </div>
+        {description && (
+          <div className="text-[15px] text-gray-500 text-center mb-4">
+            {description}
+          </div>
+        )}
+        {!description && <div className="mb-4" />}
+        <div className="flex gap-2 mt-2">
+          <button
+            onClick={onCancel}
+            disabled={loading}
+            className="flex-1 py-2.5 rounded-xl text-[17px] font-semibold bg-gray-50 text-gray-600 border border-gray-200 disabled:opacity-50"
+          >
+            {cancelLabel}
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            className={cx(
+              "flex-1 py-2.5 rounded-xl text-[17px] font-semibold text-white disabled:opacity-50",
+              danger ? "bg-error" : "bg-mint-300",
+            )}
+          >
+            {loading ? "처리 중..." : confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
