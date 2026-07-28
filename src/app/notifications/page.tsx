@@ -7,7 +7,10 @@ import RequireAuth from "@/components/RequireAuth";
 import {
   BellIcon,
   CheckIcon,
+  HeartIcon,
   ImageIcon,
+  PlusIcon,
+  ReceiptIcon,
   UsersIcon,
   WalletIcon,
 } from "@/components/icons";
@@ -43,8 +46,27 @@ function iconFor(type: NotificationItem["type"]) {
         fg: "text-success-d",
       };
     case "invite":
+    case "member_joined":
       return {
         icon: <UsersIcon size={17} />,
+        bg: "bg-gray-50",
+        fg: "text-gray-600",
+      };
+    case "plan_item_added":
+      return {
+        icon: <PlusIcon size={17} />,
+        bg: "bg-mint-50",
+        fg: "text-mint-500",
+      };
+    case "receipt_added":
+      return {
+        icon: <ReceiptIcon size={17} />,
+        bg: "bg-mint-50",
+        fg: "text-mint-500",
+      };
+    case "review_added":
+      return {
+        icon: <HeartIcon size={17} />,
         bg: "bg-gray-50",
         fg: "text-gray-600",
       };
@@ -54,6 +76,23 @@ function iconFor(type: NotificationItem["type"]) {
         bg: "bg-gray-50",
         fg: "text-gray-600",
       };
+  }
+}
+
+function linkFor(n: NotificationItem): string {
+  if (!n.meetingId) return "/home";
+  switch (n.type) {
+    case "plan_item_added":
+      return `/meetings/${n.meetingId}/pre-log`;
+    case "settlement_request":
+    case "settlement_done":
+    case "receipt_added":
+      return `/meetings/${n.meetingId}/bill-log`;
+    case "photo_added":
+    case "review_added":
+      return `/meetings/${n.meetingId}/post-log`;
+    default:
+      return `/meetings/${n.meetingId}`;
   }
 }
 
@@ -87,7 +126,7 @@ function NotificationsContent() {
           return (
             <Link
               key={n.id}
-              href={n.meetingId ? `/meetings/${n.meetingId}/bill-log` : "/home"}
+              href={linkFor(n)}
               className="flex items-center gap-2.5 py-2.5 border-b border-gray-100"
             >
               <div
