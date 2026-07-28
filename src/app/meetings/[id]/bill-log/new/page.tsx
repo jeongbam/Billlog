@@ -34,8 +34,11 @@ function WizardContent() {
     return subscribeMeeting(id, (m) => {
       setMeeting(m);
       if (m && user) setParticipantIds(m.memberIds);
+      if (m && m.status === "done") {
+        router.replace(`/meetings/${id}/bill-log`);
+      }
     });
-  }, [id, user]);
+  }, [id, user, router]);
 
   const total = items.reduce((s, it) => s + it.amount, 0);
   const itemsValid =
@@ -96,6 +99,7 @@ function WizardContent() {
         },
         user.uid,
         (uid) => meeting.memberInfo[uid]?.nickname ?? "멤버",
+        meeting.memberIds,
       );
       router.push(`/meetings/${id}/bill-log`);
     } finally {
@@ -107,7 +111,7 @@ function WizardContent() {
     router.push(`/meetings/${id}/bill-log`);
   }
 
-  if (!meeting || !user) return null;
+  if (!meeting || !user || meeting.status === "done") return null;
 
   const members = meeting.memberIds.map((uid) => ({
     uid,
