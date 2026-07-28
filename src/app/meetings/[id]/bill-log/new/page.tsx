@@ -160,16 +160,17 @@ function WizardContent() {
               className="flex items-center gap-0 px-4 py-3 border-[1.4px] border-gray-100 rounded-xl mb-2.5"
             >
               <input
-                className="flex-1 text-[18px] font-bold outline-none min-w-0"
-                placeholder="항목 이름 (예: 아메리카노)"
+                className="flex-1 text-[18px] text-gray-900 placeholder:text-gray-300 outline-none min-w-0"
+                placeholder="항목 (ex. 아메리카노)"
                 value={it.name}
                 onChange={(e) => updateItemName(it.id, e.target.value)}
               />
+
               <input
                 type="number"
                 inputMode="numeric"
                 placeholder="0"
-                className="w-24 text-right text-[18px] font-bold outline-none"
+                className="w-24 text-right text-[18px] text-gray-900 placeholder:text-gray-300 outline-none"
                 value={it.amount || ""}
                 onChange={(e) =>
                   updateItemAmount(it.id, Number(e.target.value) || 0)
@@ -187,7 +188,7 @@ function WizardContent() {
 
           <button
             onClick={addManualItem}
-            className="w-full py-3 rounded-xl border-[1.4px] border-dashed border-mint-500 text-mint-500 text-[18px] font-semibold mb-4"
+            className="w-full py-3 rounded-xl border-[1.4px] border-dashed border-mint-500 text-mint-500 text-[18px] font-bold mb-4"
           >
             + 항목 추가
           </button>
