@@ -12,7 +12,7 @@ import {
   PinIcon,
   ReceiptIcon,
 } from "@/components/icons";
-import { AvatarStack, Badge, Spinner } from "@/components/ui";
+import { AvatarStack, Badge, ConfirmModal, Spinner } from "@/components/ui";
 import {
   deleteMeeting,
   subscribeMeeting,
@@ -44,6 +44,8 @@ function MeetingHubContent() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [showMembers, setShowMembers] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -109,12 +111,16 @@ function MeetingHubContent() {
     photoURL: meeting.memberInfo[uid]?.photoURL,
   }));
 
-  async function handleDelete() {
+  async function handleDeleteConfirmed() {
     if (!meeting) return;
     if (meeting.ownerId !== user?.uid) return;
-    if (window.confirm("모임을 삭제할까요? 되돌릴 수 없어요.")) {
+    setDeleting(true);
+    try {
       await deleteMeeting(meeting.id);
       router.push("/home");
+    } finally {
+      setDeleting(false);
+      setShowDeleteConfirm(false);
     }
   }
 
@@ -136,7 +142,7 @@ function MeetingHubContent() {
               <div className="text-[20px] font-bold">{meeting.title}</div>
               {meeting.ownerId === user?.uid && (
                 <button
-                  onClick={handleDelete}
+                  onClick={() => setShowDeleteConfirm(true)}
                   className="text-[14px] text-gray-400 border border-gray-200 rounded-full px-2.5 py-1"
                 >
                   삭제
@@ -184,52 +190,34 @@ function MeetingHubContent() {
           이 모임의 기록
         </div>
 
-        {meeting.status === "active" ? (
-          <Link href={`/meetings/${meeting.id}/pre-log`}>
-            <SectionRow
-              icon={<CalendarIcon size={24} />}
-              title="Pre-log"
-              badge={preStatus}
-              desc={
-                planItems.length > 0
+        <Link href={`/meetings/${meeting.id}/pre-log`}>
+          <SectionRow
+            icon={<CalendarIcon size={24} />}
+            title="Pre-log"
+            badge={preStatus}
+            desc={
+              meeting.status === "done"
+                ? "모임이 종료되어 열람만 가능해요"
+                : planItems.length > 0
                   ? `계획 ${planItems.length}개 등록됨`
                   : "일정∙장소∙준비물을 미리 정리해요"
-              }
-            />
-          </Link>
-        ) : (
-          <div className="opacity-50 cursor-not-allowed">
-            <SectionRow
-              icon={<CalendarIcon size={24} />}
-              title="Pre-log"
-              badge={preStatus}
-              desc="모임이 종료되었습니다."
-            />
-          </div>
-        )}
-        {meeting.status === "active" ? (
-          <Link href={`/meetings/${meeting.id}/bill-log`}>
-            <SectionRow
-              icon={<ReceiptIcon size={24} />}
-              title="Bill-log"
-              badge={billStatus}
-              desc={
-                receipts.length > 0
+            }
+          />
+        </Link>
+        <Link href={`/meetings/${meeting.id}/bill-log`}>
+          <SectionRow
+            icon={<ReceiptIcon size={24} />}
+            title="Bill-log"
+            badge={billStatus}
+            desc={
+              meeting.status === "done"
+                ? "모임이 종료되어 열람만 가능해요"
+                : receipts.length > 0
                   ? `영수증 ${receipts.length}건 · 총 ${totalAmount.toLocaleString()}원`
                   : "영수증으로 정산해요"
-              }
-            />
-          </Link>
-        ) : (
-          <div className="opacity-50 cursor-not-allowed">
-            <SectionRow
-              icon={<ReceiptIcon size={24} />}
-              title="Bill-log"
-              badge={billStatus}
-              desc="모임이 종료되었습니다."
-            />
-          </div>
-        )}
+            }
+          />
+        </Link>
         <Link href={`/meetings/${meeting.id}/post-log`}>
           <SectionRow
             icon={<ImageIcon size={21} />}
@@ -239,6 +227,15 @@ function MeetingHubContent() {
           />
         </Link>
       </div>
+
+      <ConfirmModal
+        open={showDeleteConfirm}
+        title="모임을 삭제하시겠습니까?"
+        description="삭제하면 되돌릴 수 없어요."
+        loading={deleting}
+        onConfirm={handleDeleteConfirmed}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </AppShell>
   );
 }
