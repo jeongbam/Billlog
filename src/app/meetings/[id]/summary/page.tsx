@@ -71,7 +71,7 @@ function SummaryContent() {
       <div className="pt-1 flex flex-col items-center">
         <p className="text-[16px] text-gray-500 mb-4">
           {isDone
-            ? "🎉 모든 기록이 완료됐어요"
+            ? "모든 기록이 완료됐어요"
             : "종료하면 아래처럼 카드가 저장돼요"}
         </p>
 
@@ -95,7 +95,7 @@ function SummaryContent() {
                   {formatDateRange(meeting.startDate, meeting.endDate)}
                 </div>
               </div>
-              <Badge variant="mint">{isDone ? "정산완료" : "진행중"}</Badge>
+              <Badge variant="mint">{isDone ? "완료" : "진행중"}</Badge>
             </div>
             <div className="border-t border-white/10 my-3.5" />
             <div className="grid grid-cols-2 gap-2.5">
