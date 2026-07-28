@@ -44,24 +44,30 @@ function PostLogContent() {
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (!file || !user) return;
+    if (!file || !user || !meeting) return;
     setUploading(true);
     try {
       const url = await uploadImage(
         `meetings/${id}/photos/${Date.now()}-${file.name}`,
         file,
       );
-      await addPhoto(id, url, user.uid);
+      await addPhoto(id, url, user.uid, meeting.memberIds, user.nickname);
     } finally {
       setUploading(false);
     }
   }
 
   async function handleReview() {
-    if (!reviewText.trim() || !user) return;
+    if (!reviewText.trim() || !user || !meeting) return;
     setPosting(true);
     try {
-      await addReview(id, reviewText.trim(), user.uid, user.nickname);
+      await addReview(
+        id,
+        reviewText.trim(),
+        user.uid,
+        user.nickname,
+        meeting.memberIds,
+      );
       setReviewText("");
     } finally {
       setPosting(false);
