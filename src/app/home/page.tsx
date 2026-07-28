@@ -4,12 +4,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import RequireAuth from "@/components/RequireAuth";
+import { EndedMeetingCard } from "@/components/EndedMeetingCard";
 import { AvatarStack, Badge, Chip } from "@/components/ui";
 import { subscribeUserMeetings } from "@/lib/meetings";
 import { formatDateRange } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { Meeting } from "@/types";
-import Image from "next/image";
 
 function HomeContent() {
   const user = useAuthStore((s) => s.user);
@@ -21,7 +21,15 @@ function HomeContent() {
     return subscribeUserMeetings(user.uid, setMeetings);
   }, [user]);
 
-  const list = meetings.filter((m) => m.status === tab);
+  const list = meetings
+    .filter((m) => m.status === tab)
+    .slice()
+    .sort((a, b) => {
+      if (tab === "active") {
+        return a.startDate.localeCompare(b.startDate);
+      }
+      return b.startDate.localeCompare(a.startDate);
+    });
   const todayStr = new Date().toISOString().slice(0, 10);
 
   return (
@@ -91,27 +99,7 @@ function HomeContent() {
         <div className="grid grid-cols-2 gap-2.5">
           {list.map((m) => (
             <Link key={m.id} href={`/meetings/${m.id}`}>
-              <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-[0_2px_10px_rgba(33,37,44,0.04)]">
-                {" "}
-                <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
-                  <Image
-                    src={m.coverImage || "/default.png"}
-                    alt={m.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 50vw, 300px"
-                  />
-                </div>
-                <div className="p-2.5">
-                  <Badge variant="success">기록완료</Badge>
-                  <div className="text-[18px] font-bold mt-2 truncate">
-                    {m.title}
-                  </div>
-                  <div className="text-[11px] text-gray-500 mt-0.5">
-                    {formatDateRange(m.startDate, m.endDate)}
-                  </div>
-                </div>
-              </div>
+              <EndedMeetingCard meeting={m} />
             </Link>
           ))}
         </div>
