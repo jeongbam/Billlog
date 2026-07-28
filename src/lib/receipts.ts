@@ -11,7 +11,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { addNotification } from "./notifications";
+import { addNotification, notifyMeetingMembers } from "./notifications";
 import type { Receipt, ReceiptItem, Settlement, SplitMethod } from "@/types";
 
 export async function mockOcrParse(file: File): Promise<ReceiptItem[]> {
@@ -49,6 +49,7 @@ export async function createReceipt(
   },
   createdBy: string,
   memberNickname: (uid: string) => string,
+  memberIds: string[],
 ) {
   await addDoc(collection(db, "meetings", meetingId, "receipts"), {
     ...input,
@@ -78,6 +79,17 @@ export async function createReceipt(
           meetingId,
         );
       }),
+  );
+
+  const alreadyNotified = new Set([
+    createdBy,
+    ...input.participantIds.filter((uid) => uid !== input.payerId),
+  ]);
+  await notifyMeetingMembers(
+    memberIds.filter((uid) => !alreadyNotified.has(uid)),
+    "receipt_added",
+    `${memberNickname(createdBy)} 님이 영수증을 등록했어요`,
+    meetingId,
   );
 }
 
