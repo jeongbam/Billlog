@@ -73,7 +73,7 @@ function PreLogContent() {
       <div className="pt-1">
         <div className="bg-mint-50 border border-mint-100 rounded-xl p-3.5 mb-4">
           <div className="text-[18px] font-bold text-mint-500">
-            📌 모임까지 {dDay(meeting.startDate)}
+            모임까지 {dDay(meeting.startDate)}
           </div>
           <div className="text-[16px] text-gray-700 mt-1">
             일정 · 장소 · 준비물을 미리 정리해보세요
