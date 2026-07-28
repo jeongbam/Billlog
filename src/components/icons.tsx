@@ -156,6 +156,31 @@ export const CopyIcon = (p: IconProps) => (
   </svg>
 );
 
+export const HeartIcon = ({
+  filled,
+  ...p
+}: IconProps & { filled?: boolean }) => (
+  <svg {...base(p)} fill={filled ? "currentColor" : "none"}>
+    <path d="M12 20s-7.5-4.6-9.8-9.4C.7 6.9 2.6 3.5 6.2 3c2.2-.3 4.3.9 5.8 3 1.5-2.1 3.6-3.3 5.8-3 3.6.5 5.5 3.9 4 7.6C19.5 15.4 12 20 12 20Z" />
+  </svg>
+);
+
+export const PushPinIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M9 4.5h6l-.7 5.4 3 3-6.3.9L9.5 19l-.6-5.1-6.3.6 3-3.4Z" />
+    <path d="M12 13.5V19" />
+  </svg>
+);
+
+export const TrashIcon = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="M5 7.5h14" />
+    <path d="M9.5 7.5v-2a1.5 1.5 0 0 1 1.5-1.5h2a1.5 1.5 0 0 1 1.5 1.5v2" />
+    <path d="M7 7.5 7.7 19a2 2 0 0 0 2 1.9h4.6a2 2 0 0 0 2-1.9l.7-11.5" />
+    <path d="M10.2 11v6M13.8 11v6" />
+  </svg>
+);
+
 export const GoogleIcon = (p: IconProps) => (
   <svg width={p.size ?? 18} height={p.size ?? 18} viewBox="0 0 24 24">
     <path
