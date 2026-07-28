@@ -40,6 +40,7 @@ function BillLogContent() {
 
   if (!meeting) return null;
 
+  const isReadOnly = meeting.status === "done";
   const total = receipts.reduce((sum, r) => sum + r.total, 0);
   const paid = settlements.filter((s) => s.status === "paid").length;
   const percent = settlements.length ? (paid / settlements.length) * 100 : 0;
@@ -68,6 +69,16 @@ function BillLogContent() {
   return (
     <AppShell backHref={`/meetings/${id}`} title="Bill-log">
       <div className="pt-1">
+        {isReadOnly && (
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-3.5 mb-4">
+            <div className="text-[18px] font-bold text-gray-600">
+              종료된 모임이에요
+            </div>
+            <div className="text-[16px] text-gray-500 mt-1">
+              열람만 가능하며 새로운 결제내역은 등록할 수 없어요
+            </div>
+          </div>
+        )}
         {receipts.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-4 text-gray-400">
@@ -162,13 +173,15 @@ function BillLogContent() {
         )}
       </div>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pb-7 pt-2 bg-white">
-        <Link href={`/meetings/${id}/bill-log/new`}>
-          <Button variant={receipts.length === 0 ? "primary" : "secondary"}>
-            + 결제내역
-          </Button>
-        </Link>
-      </div>
+      {!isReadOnly && (
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pb-7 pt-2 bg-white">
+          <Link href={`/meetings/${id}/bill-log/new`}>
+            <Button variant={receipts.length === 0 ? "primary" : "secondary"}>
+              + 결제내역
+            </Button>
+          </Link>
+        </div>
+      )}
     </AppShell>
   );
 }
