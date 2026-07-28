@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import RequireAuth from "@/components/RequireAuth";
-import { ImageIcon } from "@/components/icons";
+import { DateRangeCalendar } from "@/components/DateRangeCalendar";
+import { CalendarIcon, ImageIcon } from "@/components/icons";
 import { Button, Input } from "@/components/ui";
 import { createMeeting, updateMeetingCover } from "@/lib/meetings";
+import { formatDateRange } from "@/lib/utils";
 import { uploadImage } from "@/lib/storage";
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -19,6 +21,7 @@ function NewMeetingContent() {
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [showCalendar, setShowCalendar] = useState(false);
   const [place, setPlace] = useState("");
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
@@ -35,9 +38,10 @@ function NewMeetingContent() {
     setCoverPreview(URL.createObjectURL(file));
   }
 
-  function handleStartChange(value: string) {
-    setStartDate(value);
-    if (endDate && endDate < value) setEndDate(value);
+  function handleDateRangeChange(newStart: string, newEnd: string) {
+    setStartDate(newStart);
+    setEndDate(newEnd);
+    if (newStart && newEnd) setShowCalendar(false);
   }
 
   async function handleNext() {
@@ -110,24 +114,33 @@ function NewMeetingContent() {
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <div className="flex gap-3">
-          <div className="flex-1">
-            <Input
-              label="시작일"
-              type="date"
-              value={startDate}
-              onChange={(e) => handleStartChange(e.target.value)}
-            />
-          </div>
-          <div className="flex-1">
-            <Input
-              label="종료일"
-              type="date"
-              value={endDate}
-              min={startDate || undefined}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-          </div>
+        <div className="block mb-3.5">
+          <span className="block text-[18px] font-semibold text-gray-600 mb-1.5">
+            모임 일정
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowCalendar((v) => !v)}
+            className="w-full flex items-center gap-2 bg-white border-[1.4px] border-gray-200 rounded-xl px-3.5 py-3 text-[18px] text-left focus:outline-none focus:border-mint-300 focus:ring-4 focus:ring-mint-50"
+          >
+            <CalendarIcon size={18} className="text-gray-400 flex-none" />
+            <span className={startDate ? "text-gray-900" : "text-gray-400"}>
+              {startDate && endDate
+                ? formatDateRange(startDate, endDate)
+                : startDate
+                  ? `${formatDateRange(startDate, startDate)} - 종료일을 선택해주세요`
+                  : "날짜를 선택해주세요"}
+            </span>
+          </button>
+          {showCalendar && (
+            <div className="mt-2">
+              <DateRangeCalendar
+                startDate={startDate}
+                endDate={endDate}
+                onChange={handleDateRangeChange}
+              />
+            </div>
+          )}
         </div>
 
         <Input
