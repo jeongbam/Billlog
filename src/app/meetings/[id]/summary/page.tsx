@@ -14,6 +14,7 @@ import {
 import { subscribeReceipts } from "@/lib/receipts";
 import { formatCurrency, formatDateRange } from "@/lib/utils";
 import type { Meeting, Photo, Receipt, Review } from "@/types";
+import Image from "next/image";
 
 function SummaryContent() {
   const { id } = useParams<{ id: string }>();
@@ -75,18 +76,15 @@ function SummaryContent() {
         </p>
 
         <div className="w-full bg-gray-900 rounded-xl overflow-hidden">
-          <div
-            className="aspect-[16/8] opacity-90 checker-bg"
-            style={
-              meeting.coverImage
-                ? {
-                    backgroundImage: `url(${meeting.coverImage})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }
-                : { backgroundColor: "#2C3037" }
-            }
-          />
+          <div className="relative aspect-[16/8] overflow-hidden">
+            <Image
+              src={meeting.coverImage || "/default.png"}
+              alt={meeting.title}
+              fill
+              className="object-cover opacity-90"
+              sizes="100vw"
+            />
+          </div>
           <div className="p-[18px]">
             <div className="flex justify-between items-start">
               <div>

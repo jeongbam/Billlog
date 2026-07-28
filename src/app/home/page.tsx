@@ -9,6 +9,7 @@ import { subscribeUserMeetings } from "@/lib/meetings";
 import { formatDateRange } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { Meeting } from "@/types";
+import Image from "next/image";
 
 function HomeContent() {
   const user = useAuthStore((s) => s.user);
@@ -92,18 +93,15 @@ function HomeContent() {
             <Link key={m.id} href={`/meetings/${m.id}`}>
               <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-[0_2px_10px_rgba(33,37,44,0.04)]">
                 {" "}
-                <div className="aspect-[16/10] overflow-hidden bg-gray-100">
-                  {" "}
-                  {m.coverImage ? (
-                    <img
-                      src={m.coverImage}
-                      alt={m.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="checker-bg w-full h-full" />
-                  )}{" "}
-                </div>{" "}
+                <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
+                  <Image
+                    src={m.coverImage || "/default.png"}
+                    alt={m.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 50vw, 300px"
+                  />
+                </div>
                 <div className="p-2.5">
                   <Badge variant="success">기록완료</Badge>
                   <div className="text-[18px] font-bold mt-2 truncate">

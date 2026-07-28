@@ -31,6 +31,7 @@ import type {
   Receipt,
   Settlement,
 } from "@/types";
+import Image from "next/image";
 
 function MeetingHubContent() {
   const { id } = useParams<{ id: string }>();
@@ -121,18 +122,15 @@ function MeetingHubContent() {
     <AppShell backHref="/home" title="모임 상세">
       <div className="pt-1">
         <div className="bg-white border border-gray-100 rounded-xl overflow-hidden mb-4">
-          <div
-            className="checker-bg aspect-[16/8]"
-            style={
-              meeting.coverImage
-                ? {
-                    backgroundImage: `url(${meeting.coverImage})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }
-                : undefined
-            }
-          />
+          <div className="relative aspect-[16/8]">
+            <Image
+              src={meeting.coverImage || "/default.png"}
+              alt={meeting.title}
+              fill
+              className="object-cover"
+              sizes="100vw"
+            />
+          </div>
           <div className="p-3.5">
             <div className="flex justify-between items-start">
               <div className="text-[20px] font-bold">{meeting.title}</div>
@@ -182,7 +180,7 @@ function MeetingHubContent() {
           </div>
         </div>
 
-        <div className="text-[11px] font-bold tracking-wide text-gray-500 uppercase mb-2">
+        <div className="text-[18px] font-bold tracking-wide text-gray-500 uppercase mb-2">
           이 모임의 기록
         </div>
 
