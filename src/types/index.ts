@@ -117,3 +117,12 @@ export interface NotificationItem {
   createdAt: number;
   read: boolean;
 }
+
+export interface AppUser {
+  uid: string;
+  email: string | null;
+  nickname: string;
+  photoURL: string | null;
+  createdAt: number;
+  fcmTokens?: string[];
+}
