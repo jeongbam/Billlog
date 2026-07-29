@@ -1,15 +1,6 @@
 export const dynamic = "force-static";
 
 export async function GET() {
-  const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  };
-
   const body = `
 const CACHE_NAME = "billlog-cache-v1";
 const OFFLINE_URL = "/home";
@@ -71,29 +62,36 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// ---- Firebase Cloud Messaging: background push notifications ----
-importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
+// ---- Web Push: background push notifications ----
+// We parse the raw Push event ourselves instead of relying on
+// firebase-messaging-compat's onBackgroundMessage(), which has proven
+// unreliable for data-only payloads (it's really built around
+// "notification" payloads). This guarantees we show exactly what our
+// Cloud Function sent.
+self.addEventListener("push", (event) => {
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch {
+    payload = {};
+  }
 
-firebase.initializeApp(${JSON.stringify(firebaseConfig)});
+  // Admin SDK delivers our custom fields under payload.data; fall back to
+  // the top level just in case the wire format ever changes.
+  const data = payload.data || payload || {};
+  const title = data.title || "Billlog";
+  const body = data.body || "";
+  const url = data.url || "/home";
 
-if (firebase.messaging.isSupported()) {
-  const messaging = firebase.messaging();
-
-  messaging.onBackgroundMessage((payload) => {
-    const data = payload.data || {};
-    const title = data.title || "Billlog";
-    const body = data.body || "";
-    const url = data.url || "/home";
-
+  event.waitUntil(
     self.registration.showNotification(title, {
       body,
       icon: "/icon-192.png",
       badge: "/icon-192.png",
       data: { url },
-    });
-  });
-}
+    })
+  );
+});
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
