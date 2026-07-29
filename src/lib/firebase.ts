@@ -1,6 +1,11 @@
 import { getApps, initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  initializeFirestore,
+  memoryLocalCache,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+} from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -16,6 +21,15 @@ export const firebaseApp =
   getApps().length > 0 ? getApps()[0] : initializeApp(firebaseConfig);
 
 export const auth = getAuth(firebaseApp);
-export const db = getFirestore(firebaseApp);
+
+export const db = initializeFirestore(firebaseApp, {
+  localCache:
+    typeof window === "undefined"
+      ? memoryLocalCache()
+      : persistentLocalCache({
+          tabManager: persistentMultipleTabManager(),
+        }),
+});
+
 export const storage = getStorage(firebaseApp);
 export const googleProvider = new GoogleAuthProvider();

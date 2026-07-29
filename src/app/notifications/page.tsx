@@ -14,6 +14,7 @@ import {
   UsersIcon,
   WalletIcon,
 } from "@/components/icons";
+import { enablePushNotifications, hasPushPermission } from "@/lib/messaging";
 import {
   subscribeNotifications,
   markAllNotificationsRead,
@@ -99,6 +100,9 @@ function linkFor(n: NotificationItem): string {
 function NotificationsContent() {
   const user = useAuthStore((s) => s.user);
   const [items, setItems] = useState<NotificationItem[]>([]);
+  const [pushEnabled, setPushEnabled] = useState(() => hasPushPermission());
+  const [pushLoading, setPushLoading] = useState(false);
+  const [pushDenied, setPushDenied] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -110,9 +114,44 @@ function NotificationsContent() {
     markAllNotificationsRead(user.uid).catch(() => null);
   }, [user]);
 
+  async function handleEnablePush() {
+    if (!user || pushLoading) return;
+    setPushLoading(true);
+    try {
+      const result = await enablePushNotifications(user.uid);
+      if (result === "enabled") setPushEnabled(true);
+      if (result === "denied") setPushDenied(true);
+    } finally {
+      setPushLoading(false);
+    }
+  }
+
   return (
     <AppShell backHref="/home" title="알림">
       <div className="pt-1">
+        {!pushEnabled && (
+          <div className="bg-mint-50 border border-mint-100 rounded-xl p-3.5 mb-4 flex items-center justify-between gap-2">
+            <div>
+              <div className="text-[15px] font-bold text-mint-500">
+                푸시 알림을 받아보세요
+              </div>
+              <div className="text-[13px] text-gray-500 mt-0.5">
+                {pushDenied
+                  ? "브라우저 알림 권한이 꺼져 있어요. 설정에서 허용해주세요."
+                  : "새 소식이 오면 바로 알려드려요."}
+              </div>
+            </div>
+            {!pushDenied && (
+              <button
+                onClick={handleEnablePush}
+                disabled={pushLoading}
+                className="flex-none text-[13px] font-bold text-white bg-mint-300 rounded-full px-3.5 py-2 disabled:opacity-50"
+              >
+                {pushLoading ? "설정 중..." : "받기"}
+              </button>
+            )}
+          </div>
+        )}
         {items.length === 0 && (
           <div className="text-center py-20">
             <div className="w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-3 text-gray-300">
