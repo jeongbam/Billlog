@@ -4,7 +4,7 @@ import PwaRegister from "@/components/PwaRegister";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://YOUR-DOMAIN.vercel.app"), // 실제 도메인으로 변경
+  metadataBase: new URL("https://billlog.vercel.app"),
 
   title: "Billlog | 모임을 기록하는 가장 쉬운 방법",
   description: "모임 생성부터 계획, 정산, 기록까지 한 번에.",
