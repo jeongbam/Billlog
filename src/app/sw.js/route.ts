@@ -81,9 +81,10 @@ if (firebase.messaging.isSupported()) {
   const messaging = firebase.messaging();
 
   messaging.onBackgroundMessage((payload) => {
-    const title = (payload.notification && payload.notification.title) || "Billlog";
-    const body = (payload.notification && payload.notification.body) || "";
-    const url = (payload.data && payload.data.url) || "/home";
+    const data = payload.data || {};
+    const title = data.title || "Billlog";
+    const body = data.body || "";
+    const url = data.url || "/home";
 
     self.registration.showNotification(title, {
       body,

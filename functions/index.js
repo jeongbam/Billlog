@@ -35,21 +35,18 @@ exports.sendPushOnNotification = onDocumentCreated(
     const tokens = userSnap.data()?.fcmTokens;
     if (!Array.isArray(tokens) || tokens.length === 0) return;
 
+    const url = linkFor(data.type, data.meetingId);
+
     const response = await messaging.sendEachForMulticast({
       tokens,
-      notification: {
+      data: {
         title: "Billlog",
         body: data.title,
-      },
-      data: {
-        url: linkFor(data.type, data.meetingId),
+        url,
       },
       webpush: {
         fcmOptions: {
-          link: linkFor(data.type, data.meetingId),
-        },
-        notification: {
-          icon: "/icon-192.png",
+          link: url,
         },
       },
     });

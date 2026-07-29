@@ -89,9 +89,7 @@ export async function listenForegroundMessages(
   if (!messaging) return () => {};
 
   return onMessage(messaging, (payload) => {
-    onReceive(
-      payload.notification?.title ?? "Billlog",
-      payload.notification?.body ?? "",
-    );
+    const data = payload.data ?? {};
+    onReceive(data.title ?? "Billlog", data.body ?? "");
   });
 }
