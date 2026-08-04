@@ -4,6 +4,10 @@ export interface AppUser {
   nickname: string;
   photoURL: string | null;
   createdAt: number;
+  fcmTokens?: string[];
+  bankName?: string;
+  accountNumber?: string;
+  accountHolder?: string;
 }
 
 export type MeetingStatus = "active" | "done";
@@ -65,6 +69,7 @@ export type SplitMethod = "equal" | "custom";
 
 export interface Receipt {
   id: string;
+  title: string;
   items: ReceiptItem[];
   total: number;
   participantIds: string[];
@@ -78,7 +83,9 @@ export interface Receipt {
 export type SettlementStatus = "pending" | "paid";
 
 export interface Settlement {
-  uid: string;
+  id: string;
+  debtorUid: string;
+  creditorUid: string;
   amount: number;
   status: SettlementStatus;
   updatedAt: number;
@@ -116,13 +123,4 @@ export interface NotificationItem {
   meetingId?: string;
   createdAt: number;
   read: boolean;
-}
-
-export interface AppUser {
-  uid: string;
-  email: string | null;
-  nickname: string;
-  photoURL: string | null;
-  createdAt: number;
-  fcmTokens?: string[];
 }
