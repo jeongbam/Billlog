@@ -4,9 +4,10 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import RequireAuth from "@/components/RequireAuth";
-import { Avatar, Button, Input } from "@/components/ui";
-import { updateUserProfile } from "@/lib/auth";
+import { Avatar, Button, Input, Select } from "@/components/ui";
+import { isNicknameTaken, updateUserProfile } from "@/lib/auth";
 import { uploadImage } from "@/lib/storage";
+import { KOREAN_BANKS } from "@/lib/constants";
 import { useAuthStore } from "@/store/useAuthStore";
 
 function OnboardingContent() {
@@ -16,10 +17,14 @@ function OnboardingContent() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [nickname, setNickname] = useState(user?.nickname ?? "");
+  const [nicknameError, setNicknameError] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     user?.photoURL ?? null,
   );
+  const [bankName, setBankName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountHolder, setAccountHolder] = useState("");
   const [loading, setLoading] = useState(false);
 
   const canSubmit = nickname.trim().length > 0 && nickname.trim().length <= 8;
@@ -33,8 +38,15 @@ function OnboardingContent() {
 
   async function handleSubmit() {
     if (!user || !canSubmit) return;
+    setNicknameError("");
     setLoading(true);
     try {
+      const taken = await isNicknameTaken(nickname.trim(), user.uid);
+      if (taken) {
+        setNicknameError("이미 사용 중인 닉네임이에요.");
+        return;
+      }
+
       let photoURL = user.photoURL;
       if (photoFile) {
         photoURL = await uploadImage(`users/${user.uid}/avatar`, photoFile);
@@ -42,6 +54,13 @@ function OnboardingContent() {
       await updateUserProfile(user.uid, {
         nickname: nickname.trim(),
         photoURL,
+        ...(bankName ? { bankName } : {}),
+        ...(accountNumber.trim()
+          ? { accountNumber: accountNumber.trim() }
+          : {}),
+        ...(accountHolder.trim()
+          ? { accountHolder: accountHolder.trim() }
+          : {}),
       });
       setUser({
         ...user,
@@ -91,13 +110,59 @@ function OnboardingContent() {
         <Input
           label="닉네임"
           value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
+          onChange={(e) => {
+            setNickname(e.target.value);
+            setNicknameError("");
+          }}
           maxLength={8}
           placeholder="8자 이내로 입력해주세요"
         />
-        <p className="text-[11px] text-gray-400 text-right -mt-2">
-          {nickname.length}/8
-        </p>
+        {nicknameError ? (
+          <p className="text-[13px] text-error-d text-right -mt-2 mb-3.5">
+            {nicknameError}
+          </p>
+        ) : (
+          <p className="text-[11px] text-gray-400 text-right -mt-2">
+            {nickname.length}/8
+          </p>
+        )}
+
+        <div className="mt-6 mb-2">
+          <div className="text-[16px] font-bold text-gray-700">
+            정산받을 계좌 (선택)
+          </div>
+          <p className="text-[13px] text-gray-400 mt-0.5">
+            등록해두면 정산 화면에서 계좌를 바로 복사해서 보낼 수 있어요. 나중에
+            마이페이지에서도 등록할 수 있어요.
+          </p>
+        </div>
+        <Select
+          label="은행"
+          value={bankName}
+          onChange={(e) => setBankName(e.target.value)}
+        >
+          <option value="">은행 선택 안 함</option>
+          {KOREAN_BANKS.map((b) => (
+            <option key={b} value={b}>
+              {b}
+            </option>
+          ))}
+        </Select>
+        <Input
+          label="계좌번호"
+          placeholder="숫자만 입력"
+          inputMode="numeric"
+          value={accountNumber}
+          onChange={(e) =>
+            setAccountNumber(e.target.value.replace(/[^0-9-]/g, ""))
+          }
+        />
+        <Input
+          label="예금주명"
+          placeholder="계좌 실명"
+          value={accountHolder}
+          onChange={(e) => setAccountHolder(e.target.value)}
+        />
       </div>
 
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pb-7 pt-2 bg-white">
