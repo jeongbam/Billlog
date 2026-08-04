@@ -148,7 +148,7 @@ function PreLogContent() {
           </div>
         )}
 
-        <div className="text-[18px] font-bold text-gray-500 uppercase mb-2">
+        <div className="text-[20px] font-bold text-gray-700 uppercase mb-2">
           모임 정보
         </div>
         <Card className="mb-4">
@@ -170,7 +170,7 @@ function PreLogContent() {
           />
         </Card>
 
-        <div className="text-[18px] font-bold text-gray-500 uppercase mb-2">
+        <div className="text-[20px] font-bold text-gray-700 uppercase mb-2">
           계획
         </div>
 

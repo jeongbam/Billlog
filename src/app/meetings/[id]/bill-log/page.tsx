@@ -145,7 +145,7 @@ function BillLogContent() {
             </div>
             <ProgressBar percent={percent} />
 
-            <div className="text-[18px] font-bold text-gray-700 uppercase mt-5 mb-2">
+            <div className="text-[20px] font-bold text-gray-700 uppercase mt-5 mb-2">
               정산 현황
             </div>
             {settlements.length === 0 ? (
@@ -203,7 +203,7 @@ function BillLogContent() {
                       </div>
 
                       {iAmDebtor && s.status !== "paid" && (
-                        <div className="mt-2 ml-[42px]">
+                        <div className="mt-2 ml-[34px]">
                           {creditorProfile?.accountNumber ? (
                             <button
                               onClick={() =>
@@ -212,15 +212,15 @@ function BillLogContent() {
                                   creditorProfile.accountNumber!,
                                 )
                               }
-                              className="flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5"
+                              className="flex items-center gap-1.5 text-[14px] font-semibold text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5"
                             >
-                              <CopyIcon size={14} />
+                              <CopyIcon size={20} />
                               {copiedUid === s.creditorUid
                                 ? "복사됨"
                                 : `${creditorProfile.bankName ?? ""} ${creditorProfile.accountNumber}`}
                             </button>
                           ) : (
-                            <span className="text-[12.5px] text-gray-400">
+                            <span className="text-[14px] text-gray-400">
                               {nickname(s.creditorUid)}님이 아직 계좌를 등록하지
                               않았어요
                             </span>
@@ -233,18 +233,18 @@ function BillLogContent() {
               </Card>
             )}
 
-            <div className="text-[18px] font-bold text-gray-700 uppercase mb-2">
-              등록된 영수증 ({receipts.length})
+            <div className="text-[20px] font-bold text-gray-700 uppercase mt-5 mb-2">
+              등록된 결제내역 ({receipts.length})
             </div>
             {dayGroups.map(([dateKey, dayReceipts]) => {
               const dayTotal = dayReceipts.reduce((s, r) => s + r.total, 0);
               return (
                 <div key={dateKey} className="mb-4">
                   <div className="flex justify-between items-baseline mb-1">
-                    <span className="text-[15px] font-bold text-mint-500">
+                    <span className="text-[16px] font-bold text-mint-500">
                       {dayLabel(meeting.startDate, dayReceipts[0].createdAt)}
                     </span>
-                    <span className="text-[13px] text-gray-400">
+                    <span className="text-[16px] text-gray-400">
                       {formatCurrency(dayTotal)}
                     </span>
                   </div>
@@ -278,9 +278,7 @@ function BillLogContent() {
       {!isReadOnly && (
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pb-7 pt-2 bg-white">
           <Link href={`/meetings/${id}/bill-log/new`}>
-            <Button variant={receipts.length === 0 ? "primary" : "secondary"}>
-              + 결제내역
-            </Button>
+            <Button variant="primary">+ 결제내역</Button>
           </Link>
         </div>
       )}

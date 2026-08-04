@@ -240,7 +240,7 @@ function WizardContent() {
                 active={participantIds.includes(m.uid)}
                 onClick={() => toggleParticipant(m.uid)}
               >
-                👤 {m.nickname}
+                {m.nickname}
               </Chip>
             ))}
           </div>
@@ -366,10 +366,10 @@ function WizardContent() {
                     }`}
                   >
                     <Avatar nickname={m?.nickname ?? "?"} size="sm" />
-                    <div className="flex-1 text-[13.5px] font-semibold">
+                    <div className="flex-1 text-[16px] font-semibold">
                       {m?.nickname}
                     </div>
-                    <span className="text-[13.5px] font-bold">
+                    <span className="text-[16px] font-bold">
                       {formatCurrency(splits[uid] ?? 0)}
                     </span>
                   </div>
@@ -399,8 +399,8 @@ function Row({
 }) {
   return (
     <div className="flex justify-between py-1">
-      <span className="text-[16px] text-gray-500">{label}</span>
-      <span className={`text-[13.5px] ${bold ? "font-bold" : "font-semibold"}`}>
+      <span className="text-[18px] text-gray-500">{label}</span>
+      <span className={`text-[16px] ${bold ? "font-bold" : "font-semibold"}`}>
         {value}
       </span>
     </div>

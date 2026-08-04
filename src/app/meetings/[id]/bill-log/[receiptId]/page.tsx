@@ -33,7 +33,7 @@ function ReceiptDetailContent() {
   if (!receipt) {
     return (
       <AppShell backHref={`/meetings/${id}/bill-log`} title="영수증">
-        <p className="text-center text-[18px] text-gray-400 py-16">
+        <p className="text-center text-[20px] text-gray-400 py-16">
           삭제되었거나 존재하지 않는 영수증이에요.
         </p>
       </AppShell>
@@ -46,7 +46,7 @@ function ReceiptDetailContent() {
         <Badge variant="outline">
           {dayLabel(meeting.startDate, receipt.createdAt)}
         </Badge>
-        <h1 className="text-[24px] font-bold mt-2 mb-1">
+        <h1 className="text-[24px] font-bold mt-5 mb-2">
           {receipt.title || "영수증"}
         </h1>
         <div className="flex items-center gap-2 text-gray-500 text-[16px] mb-5">
@@ -54,7 +54,7 @@ function ReceiptDetailContent() {
           <span>{nickname(receipt.payerId)} 결제</span>
         </div>
 
-        <div className="text-[18px] font-bold text-gray-700 uppercase mb-2">
+        <div className="text-[20px] font-bold text-gray-700 uppercase mb-2">
           결제 항목 ({receipt.items.length})
         </div>
         <Card className="mb-5">
@@ -66,22 +66,20 @@ function ReceiptDetailContent() {
               }`}
             >
               <span className="text-[18px] font-semibold">{it.name}</span>
-              <span className="text-[18px] font-bold">
-                {formatCurrency(it.amount)}
-              </span>
+              <span className="text-[18px]">{formatCurrency(it.amount)}</span>
             </div>
           ))}
           <div className="flex justify-between items-center pt-3 mt-1 border-t border-gray-200">
             <span className="text-[18px] font-bold text-gray-700">합계</span>
-            <span className="text-[20px] font-bold text-mint-500">
+            <span className="text-[20px] text-mint-500">
               {formatCurrency(receipt.total)}
             </span>
           </div>
         </Card>
 
-        <div className="text-[18px] font-bold text-gray-700 uppercase mb-2">
-          {receipt.splitMethod === "equal" ? "N분의 1" : "직접 입력"} ·{" "}
-          {receipt.participantIds.length}명
+        <div className="text-[20px] font-bold text-gray-700 uppercase mb-2">
+          {receipt.splitMethod === "equal" ? "N분의 1" : "직접 입력"} (
+          {receipt.participantIds.length})
         </div>
         <Card>
           {receipt.participantIds.map((uid, i) => (
@@ -102,7 +100,7 @@ function ReceiptDetailContent() {
                   </span>
                 )}
               </div>
-              <span className="text-[18px] font-bold">
+              <span className="text-[18px]">
                 {formatCurrency(receipt.splits[uid] ?? 0)}
               </span>
             </div>
