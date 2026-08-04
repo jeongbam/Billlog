@@ -298,7 +298,11 @@ function WizardContent() {
                       : ""
                   }`}
                 >
-                  <Avatar nickname={m?.nickname ?? "?"} size="sm" />
+                  <Avatar
+                    nickname={m?.nickname ?? "?"}
+                    photoURL={m?.photoURL}
+                    size="sm"
+                  />
                   <div className="flex-1 text-[18px] font-semibold">
                     {m?.nickname}
                   </div>
@@ -365,7 +369,11 @@ function WizardContent() {
                       i < arr.length - 1 ? "border-b border-gray-100" : ""
                     }`}
                   >
-                    <Avatar nickname={m?.nickname ?? "?"} size="sm" />
+                    <Avatar
+                      nickname={m?.nickname ?? "?"}
+                      photoURL={m?.photoURL}
+                      size="sm"
+                    />
                     <div className="flex-1 text-[16px] font-semibold">
                       {m?.nickname}
                     </div>

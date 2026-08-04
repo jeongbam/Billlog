@@ -116,7 +116,11 @@ function PostLogContent() {
         <div className="flex flex-col gap-2.5 mb-3">
           {reviews.map((r) => (
             <div key={r.id} className="flex gap-2 items-start">
-              <Avatar nickname={r.nickname} size="sm" />
+              <Avatar
+                nickname={r.nickname}
+                photoURL={meeting.memberInfo[r.uid]?.photoURL}
+                size="sm"
+              />
               <div className="bg-gray-50 rounded-xl px-3 py-2 text-[12.5px] max-w-[80%]">
                 {r.text}
               </div>

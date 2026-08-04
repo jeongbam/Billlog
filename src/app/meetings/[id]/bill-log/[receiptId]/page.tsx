@@ -29,11 +29,12 @@ function ReceiptDetailContent() {
 
   const nickname = (uid: string) =>
     meeting.memberInfo[uid]?.nickname ?? "알 수 없음";
+  const photoURL = (uid: string) => meeting.memberInfo[uid]?.photoURL ?? null;
 
   if (!receipt) {
     return (
       <AppShell backHref={`/meetings/${id}/bill-log`} title="영수증">
-        <p className="text-center text-[20px] text-gray-400 py-16">
+        <p className="text-center text-[18px] text-gray-400 py-16">
           삭제되었거나 존재하지 않는 영수증이에요.
         </p>
       </AppShell>
@@ -50,7 +51,11 @@ function ReceiptDetailContent() {
           {receipt.title || "영수증"}
         </h1>
         <div className="flex items-center gap-2 text-gray-500 text-[16px] mb-5">
-          <Avatar nickname={nickname(receipt.payerId)} size="sm" />
+          <Avatar
+            nickname={nickname(receipt.payerId)}
+            photoURL={photoURL(receipt.payerId)}
+            size="sm"
+          />
           <span>{nickname(receipt.payerId)} 결제</span>
         </div>
 
@@ -91,7 +96,11 @@ function ReceiptDetailContent() {
                   : ""
               }`}
             >
-              <Avatar nickname={nickname(uid)} size="sm" />
+              <Avatar
+                nickname={nickname(uid)}
+                photoURL={photoURL(uid)}
+                size="sm"
+              />
               <div className="flex-1 text-[18px] font-semibold">
                 {nickname(uid)}
                 {uid === receipt.payerId && (

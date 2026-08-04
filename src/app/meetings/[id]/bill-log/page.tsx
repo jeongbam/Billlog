@@ -77,6 +77,7 @@ function BillLogContent() {
   const percent = settlements.length ? (paid / settlements.length) * 100 : 0;
   const nickname = (uid: string) =>
     meeting.memberInfo[uid]?.nickname ?? "알 수 없음";
+  const photoURL = (uid: string) => meeting.memberInfo[uid]?.photoURL ?? null;
 
   async function handleMarkPaid(s: Settlement) {
     setBusyId(s.id);
@@ -105,9 +106,7 @@ function BillLogContent() {
       await navigator.clipboard.writeText(accountNumber.replace(/\s/g, ""));
       setCopiedUid(uid);
       setTimeout(() => setCopiedUid((cur) => (cur === uid ? null : cur)), 1500);
-    } catch {
-      // clipboard access denied — nothing we can do silently
-    }
+    } catch {}
   }
 
   return (
@@ -168,7 +167,11 @@ function BillLogContent() {
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
-                        <Avatar nickname={nickname(s.debtorUid)} size="sm" />
+                        <Avatar
+                          nickname={nickname(s.debtorUid)}
+                          photoURL={photoURL(s.debtorUid)}
+                          size="sm"
+                        />
                         <div className="flex-1 min-w-0">
                           <div className="text-[16px] font-semibold truncate">
                             {nickname(s.debtorUid)}
