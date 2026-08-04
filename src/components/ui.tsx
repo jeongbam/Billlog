@@ -68,6 +68,32 @@ export function Input({
   );
 }
 
+export function Select({
+  label,
+  className,
+  children,
+  ...rest
+}: React.SelectHTMLAttributes<HTMLSelectElement> & { label?: string }) {
+  return (
+    <label className="block mb-3.5">
+      {label && (
+        <span className="block text-[18px] font-semibold text-gray-600 mb-1.5">
+          {label}
+        </span>
+      )}
+      <select
+        className={cx(
+          "w-full bg-white border-[1.4px] border-gray-200 rounded-xl px-3.5 py-3 text-[18px] text-gray-900 focus:outline-none focus:border-mint-300 focus:ring-4 focus:ring-mint-50",
+          className,
+        )}
+        {...rest}
+      >
+        {children}
+      </select>
+    </label>
+  );
+}
+
 export function Textarea({
   label,
   className,
