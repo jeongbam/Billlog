@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import RequireAuth from "@/components/RequireAuth";
 import { PlusIcon } from "@/components/icons";
-import { Avatar, Button } from "@/components/ui";
+import { Avatar } from "@/components/ui";
 import {
   addPhoto,
   addReview,
@@ -147,7 +147,7 @@ function PostLogContent() {
         </div>
 
         {meeting.status === "active" && meeting.ownerId === user?.uid && (
-          <div className="bg-mint-50 border border-mint-100 rounded-xl p-3.5 flex justify-between items-center mb-24">
+          <div className="bg-mint-50 border border-mint-100 rounded-xl p-3.5 flex justify-between items-center mb-6">
             <span className="text-[18px] text-gray-700">
               사진과 후기가 다 모였다면
             </span>
@@ -159,15 +159,6 @@ function PostLogContent() {
             </button>
           </div>
         )}
-      </div>
-
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pb-7 pt-2 bg-white">
-        <Button
-          variant="secondary"
-          onClick={() => router.push(`/meetings/${id}`)}
-        >
-          모임 상세로 돌아가기
-        </Button>
       </div>
     </AppShell>
   );
