@@ -44,8 +44,8 @@ export function AppShell({
   }, [bell, user]);
 
   return (
-    <div className="min-h-screen bg-[#E7ECF3] flex justify-center">
-      <div className="relative w-full max-w-md min-h-screen bg-white flex flex-col shadow-xl">
+    <div className="h-dvh bg-[#E7ECF3] flex justify-center">
+      <div className="relative w-full max-w-md h-full bg-white flex flex-col shadow-xl overflow-hidden">
         {(title || logo || bell || backHref !== undefined) && (
           <header className="flex-none flex items-center gap-3 px-4 py-3 min-h-[52px]">
             {backHref !== undefined && (
