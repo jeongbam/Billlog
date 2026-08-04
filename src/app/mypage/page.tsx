@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import RequireAuth from "@/components/RequireAuth";
-import { ChevronRightIcon } from "@/components/icons";
+import { ChevronRightIcon, EditIcon } from "@/components/icons";
 import { Avatar, Chip } from "@/components/ui";
 import { signOutUser } from "@/lib/auth";
 import { subscribeUserMeetings } from "@/lib/meetings";
@@ -45,6 +45,13 @@ function MyPageContent() {
             <div className="text-[22px] font-bold">{user.nickname}</div>
             <div className="text-[18px] text-gray-400 mt-0.5">{user.email}</div>
           </div>
+          <Link
+            href="/mypage/edit-profile"
+            aria-label="프로필 수정"
+            className="w-9 h-9 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-500 flex-none"
+          >
+            <EditIcon size={16} />
+          </Link>
         </div>
 
         <div className="grid grid-cols-3 gap-2.5 mb-5">
@@ -88,14 +95,27 @@ function MyPageContent() {
         <div className="text-[20px] font-bold text-gray-700 uppercase mt-14 mb-2">
           설정
         </div>
-        <div className="flex items-center justify-between py-2.5 border-b border-gray-100">
+        <Link
+          href="/notifications"
+          className="flex items-center justify-between py-2.5 border-b border-gray-100"
+        >
           <span className="text-[18px] font-semibold">알림 설정</span>
           <ChevronRightIcon size={20} className="text-gray-300" />
-        </div>
-        <div className="flex items-center justify-between py-2.5 border-b border-gray-100">
+        </Link>
+        <Link
+          href="/mypage/account"
+          className="flex items-center justify-between py-2.5 border-b border-gray-100"
+        >
           <span className="text-[18px] font-semibold">계좌 관리</span>
-          <ChevronRightIcon size={20} className="text-gray-300" />
-        </div>
+          <div className="flex items-center gap-1.5">
+            {user.accountNumber && (
+              <span className="text-[14px] text-gray-400">
+                {user.bankName} {user.accountNumber}
+              </span>
+            )}
+            <ChevronRightIcon size={20} className="text-gray-300" />
+          </div>
+        </Link>
         <button
           onClick={handleLogout}
           className="w-full text-left py-2.5 text-[18px] font-semibold text-error-d"
