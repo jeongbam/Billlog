@@ -23,6 +23,7 @@ function WizardContent() {
 
   const [meeting, setMeeting] = useState<Meeting | null>(null);
   const [step, setStep] = useState(1);
+  const [title, setTitle] = useState("");
   const [items, setItems] = useState<ReceiptItem[]>([blankItem()]);
   const [participantIds, setParticipantIds] = useState<string[]>([]);
   const [splitMethod, setSplitMethod] = useState<SplitMethod>("equal");
@@ -42,7 +43,9 @@ function WizardContent() {
 
   const total = items.reduce((s, it) => s + it.amount, 0);
   const itemsValid =
-    items.length > 0 && items.every((it) => it.name.trim() && it.amount > 0);
+    title.trim().length > 0 &&
+    items.length > 0 &&
+    items.every((it) => it.name.trim() && it.amount > 0);
 
   function updateItemName(itemId: string, name: string) {
     setItems((prev) =>
@@ -90,6 +93,7 @@ function WizardContent() {
       await createReceipt(
         id,
         {
+          title: title.trim(),
           items,
           total,
           participantIds,
@@ -157,6 +161,14 @@ function WizardContent() {
           <h2 className="text-[20px] text-gray-700 font-bold mt-10 mb-4">
             얼마를 썼는지 입력해주세요
           </h2>
+
+          <input
+            className="w-full text-[18px] font-bold text-gray-900 placeholder:text-gray-300 placeholder:font-normal outline-none border-[1.4px] border-gray-100 rounded-xl px-4 py-3 mb-4 focus:border-mint-300"
+            placeholder="영수증 제목 (ex. 첫째날 저녁)"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            maxLength={30}
+          />
 
           {items.map((it) => (
             <div
@@ -329,6 +341,7 @@ function WizardContent() {
             이대로 정산을 요청할까요?
           </h2>
           <Card className="mb-3.5">
+            <Row label="제목" value={title} />
             <Row label="영수증" value={`1건 · ${items.length}항목`} />
             <Row label="총 사용 금액" value={formatCurrency(total)} bold />
             <Row
