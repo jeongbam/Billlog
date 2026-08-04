@@ -1,7 +1,8 @@
 "use client";
 
-import { arrayUnion, doc, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import {
+  deleteToken,
   getMessaging,
   getToken,
   isSupported,
@@ -12,6 +13,8 @@ import { db, firebaseApp } from "./firebase";
 
 let messagingInstance: Messaging | null = null;
 let supportChecked = false;
+
+const LOCAL_PREF_KEY = "billlog:push-enabled";
 
 async function getMessagingIfSupported(): Promise<Messaging | null> {
   if (typeof window === "undefined") return null;
@@ -66,11 +69,42 @@ export async function enablePushNotifications(
     await updateDoc(doc(db, "users", uid), {
       fcmTokens: arrayUnion(token),
     });
+    localStorage.setItem(LOCAL_PREF_KEY, "true");
 
     return "enabled";
   } catch (err) {
     console.error("[push] enable failed", err);
     return "error";
+  }
+}
+
+export async function disablePushNotifications(uid: string): Promise<void> {
+  localStorage.setItem(LOCAL_PREF_KEY, "false");
+
+  if (typeof window === "undefined" || Notification.permission !== "granted") {
+    return;
+  }
+
+  const messaging = await getMessagingIfSupported();
+  if (!messaging) return;
+
+  const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
+  if (!vapidKey) return;
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const token = await getToken(messaging, {
+      vapidKey,
+      serviceWorkerRegistration: registration,
+    });
+    if (token) {
+      await updateDoc(doc(db, "users", uid), {
+        fcmTokens: arrayRemove(token),
+      });
+    }
+    await deleteToken(messaging);
+  } catch (err) {
+    console.error("[push] disable failed", err);
   }
 }
 
@@ -80,6 +114,13 @@ export function hasPushPermission(): boolean {
     "Notification" in window &&
     Notification.permission === "granted"
   );
+}
+
+export function isPushEnabledLocally(): boolean {
+  if (typeof window === "undefined") return false;
+  const stored = localStorage.getItem(LOCAL_PREF_KEY);
+  if (stored !== null) return stored === "true";
+  return hasPushPermission();
 }
 
 export async function listenForegroundMessages(

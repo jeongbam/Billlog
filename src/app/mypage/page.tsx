@@ -6,9 +6,14 @@ import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import RequireAuth from "@/components/RequireAuth";
 import { ChevronRightIcon, EditIcon } from "@/components/icons";
-import { Avatar, Chip } from "@/components/ui";
+import { Avatar, Chip, Toggle } from "@/components/ui";
 import { signOutUser } from "@/lib/auth";
 import { subscribeUserMeetings } from "@/lib/meetings";
+import {
+  disablePushNotifications,
+  enablePushNotifications,
+  isPushEnabledLocally,
+} from "@/lib/messaging";
 import { formatDateRange } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { Meeting } from "@/types";
@@ -18,6 +23,8 @@ function MyPageContent() {
   const router = useRouter();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [tab, setTab] = useState<"owned" | "joined">("owned");
+  const [pushEnabled, setPushEnabled] = useState(() => isPushEnabledLocally());
+  const [pushBusy, setPushBusy] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -34,6 +41,22 @@ function MyPageContent() {
   async function handleLogout() {
     await signOutUser();
     router.push("/");
+  }
+
+  async function handleTogglePush(next: boolean) {
+    if (pushBusy) return;
+    setPushBusy(true);
+    try {
+      if (next) {
+        const result = await enablePushNotifications(user!.uid);
+        setPushEnabled(result === "enabled");
+      } else {
+        await disablePushNotifications(user!.uid);
+        setPushEnabled(false);
+      }
+    } finally {
+      setPushBusy(false);
+    }
   }
 
   return (
@@ -95,13 +118,14 @@ function MyPageContent() {
         <div className="text-[20px] font-bold text-gray-700 uppercase mt-14 mb-2">
           설정
         </div>
-        <Link
-          href="/notifications"
-          className="flex items-center justify-between py-2.5 border-b border-gray-100"
-        >
+        <div className="flex items-center justify-between py-2.5 border-b border-gray-100">
           <span className="text-[18px] font-semibold">알림 설정</span>
-          <ChevronRightIcon size={20} className="text-gray-300" />
-        </Link>
+          <Toggle
+            checked={pushEnabled}
+            onChange={handleTogglePush}
+            disabled={pushBusy}
+          />
+        </div>
         <Link
           href="/mypage/account"
           className="flex items-center justify-between py-2.5 border-b border-gray-100"

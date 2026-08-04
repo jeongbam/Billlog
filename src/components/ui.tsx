@@ -68,6 +68,37 @@ export function Input({
   );
 }
 
+export function Toggle({
+  checked,
+  onChange,
+  disabled,
+}: {
+  checked: boolean;
+  onChange: (value: boolean) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className={cx(
+        "relative inline-flex h-7 w-12 flex-none items-center rounded-full transition-colors disabled:opacity-50",
+        checked ? "bg-mint-300" : "bg-gray-200",
+      )}
+    >
+      <span
+        className={cx(
+          "inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform",
+          checked ? "translate-x-6" : "translate-x-1",
+        )}
+      />
+    </button>
+  );
+}
+
 export function Select({
   label,
   className,
