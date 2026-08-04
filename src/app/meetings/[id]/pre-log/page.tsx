@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import RequireAuth from "@/components/RequireAuth";
@@ -40,7 +40,6 @@ import {
 
 function PreLogContent() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const [meeting, setMeeting] = useState<Meeting | null>(null);
   const [items, setItems] = useState<PlanItem[]>([]);
@@ -171,18 +170,8 @@ function PreLogContent() {
           />
         </Card>
 
-        <div className="flex justify-between items-center mb-2">
-          <div className="text-[18px] font-bold text-gray-500 uppercase">
-            계획
-          </div>
-          {!isReadOnly && (
-            <button
-              className="text-[16px] font-bold text-mint-500"
-              onClick={() => setShowForm((v) => !v)}
-            >
-              {showForm ? "취소" : "+ 추가"}
-            </button>
-          )}
+        <div className="text-[18px] font-bold text-gray-500 uppercase mb-2">
+          계획
         </div>
 
         {showForm && !isReadOnly && (
@@ -312,14 +301,16 @@ function PreLogContent() {
         onCancel={() => setDeleteTarget(null)}
       />
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pb-7 pt-2 bg-white">
-        <Button
-          variant="secondary"
-          onClick={() => router.push(`/meetings/${id}`)}
-        >
-          모임 상세로 돌아가기
-        </Button>
-      </div>
+      {!isReadOnly && (
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pb-7 pt-2 bg-white">
+          <Button
+            variant={showForm ? "secondary" : "primary"}
+            onClick={() => setShowForm((v) => !v)}
+          >
+            {showForm ? "취소" : "+ 계획 추가"}
+          </Button>
+        </div>
+      )}
     </AppShell>
   );
 }
@@ -342,6 +333,9 @@ function PlanItemRow({
   const liked = !!currentUid && item.likedBy.includes(currentUid);
   return (
     <div className="flex items-center gap-2.5 py-2.5 border-b border-gray-100">
+      <div className="w-10 h-10 rounded-[10px] bg-gray-50 flex items-center justify-center text-gray-600 flex-none">
+        <LinkIcon size={22} />
+      </div>
       <div className="flex-1 min-w-0">
         <div className="text-[18px] font-semibold">{item.title}</div>
         <div className="text-[16px] text-gray-500 truncate">
