@@ -8,11 +8,16 @@ import {
   type User,
 } from "firebase/auth";
 import {
+  collection,
   doc,
   getDoc,
+  getDocs,
+  limit,
+  query,
   serverTimestamp,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { auth, db, googleProvider } from "./firebase";
 import type { AppUser } from "@/types";
@@ -67,16 +72,41 @@ export async function signInWithGoogle(): Promise<{
 
 export async function updateUserProfile(
   uid: string,
-  data: Partial<Pick<AppUser, "nickname" | "photoURL">>,
+  data: Partial<
+    Pick<
+      AppUser,
+      "nickname" | "photoURL" | "bankName" | "accountNumber" | "accountHolder"
+    >
+  >,
 ) {
   await updateDoc(doc(db, "users", uid), data);
 
-  if (auth.currentUser) {
+  if (auth.currentUser && ("nickname" in data || "photoURL" in data)) {
     await updateProfile(auth.currentUser, {
       displayName: data.nickname ?? auth.currentUser.displayName,
       photoURL: data.photoURL ?? auth.currentUser.photoURL,
     });
   }
+}
+
+export async function getUserProfile(uid: string): Promise<AppUser | null> {
+  const snap = await getDoc(doc(db, "users", uid));
+  return snap.exists() ? (snap.data() as AppUser) : null;
+}
+
+export async function isNicknameTaken(
+  nickname: string,
+  excludeUid?: string,
+): Promise<boolean> {
+  const trimmed = nickname.trim();
+  if (!trimmed) return false;
+  const q = query(
+    collection(db, "users"),
+    where("nickname", "==", trimmed),
+    limit(5),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.some((d) => d.id !== excludeUid);
 }
 
 export async function signOutUser() {
