@@ -4,8 +4,12 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import RequireAuth from "@/components/RequireAuth";
-import { Avatar, Button, Input } from "@/components/ui";
-import { isNicknameTaken, updateUserProfile } from "@/lib/auth";
+import {
+  NicknameCheckField,
+  type NicknameCheckStatus,
+} from "@/components/NicknameCheckField";
+import { Avatar, Button } from "@/components/ui";
+import { updateUserProfile } from "@/lib/auth";
 import { uploadImage } from "@/lib/storage";
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -16,7 +20,8 @@ function EditProfileContent() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [nickname, setNickname] = useState(user?.nickname ?? "");
-  const [nicknameError, setNicknameError] = useState("");
+  const [nicknameStatus, setNicknameStatus] =
+    useState<NicknameCheckStatus>("idle");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     user?.photoURL ?? null,
@@ -25,7 +30,12 @@ function EditProfileContent() {
 
   if (!user) return null;
 
-  const canSubmit = nickname.trim().length > 0 && nickname.trim().length <= 8;
+  const nicknameChanged = nickname.trim() !== user.nickname;
+  const nicknameReady = !nicknameChanged || nicknameStatus === "available";
+  const canSave =
+    (photoFile !== null ||
+      (nicknameChanged && nicknameStatus === "available")) &&
+    nicknameReady;
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -35,19 +45,10 @@ function EditProfileContent() {
   }
 
   async function handleSave() {
-    if (!user || !canSubmit) return;
-    setNicknameError("");
+    if (!user || !canSave) return;
     setSaving(true);
     try {
       const trimmed = nickname.trim();
-      if (trimmed !== user.nickname) {
-        const taken = await isNicknameTaken(trimmed, user.uid);
-        if (taken) {
-          setNicknameError("이미 사용 중인 닉네임이에요.");
-          return;
-        }
-      }
-
       let photoURL = user.photoURL;
       if (photoFile) {
         photoURL = await uploadImage(`users/${user.uid}/avatar`, photoFile);
@@ -86,29 +87,17 @@ function EditProfileContent() {
           </button>
         </div>
 
-        <Input
-          label="닉네임"
+        <NicknameCheckField
           value={nickname}
-          onChange={(e) => {
-            setNickname(e.target.value);
-            setNicknameError("");
-          }}
-          maxLength={8}
-          placeholder="8자 이내로 입력해주세요"
+          onChange={setNickname}
+          excludeUid={user.uid}
+          status={nicknameStatus}
+          onStatusChange={setNicknameStatus}
         />
-        {nicknameError ? (
-          <p className="text-[13px] text-error-d text-right -mt-2 mb-3.5">
-            {nicknameError}
-          </p>
-        ) : (
-          <p className="text-[11px] text-gray-400 text-right -mt-2">
-            {nickname.length}/8
-          </p>
-        )}
       </div>
 
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md px-4 pb-7 pt-2 bg-white">
-        <Button onClick={handleSave} loading={saving} disabled={!canSubmit}>
+        <Button onClick={handleSave} loading={saving} disabled={!canSave}>
           저장하기
         </Button>
       </div>

@@ -4,8 +4,12 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import RequireAuth from "@/components/RequireAuth";
+import {
+  NicknameCheckField,
+  type NicknameCheckStatus,
+} from "@/components/NicknameCheckField";
 import { Avatar, Button, Input, Select } from "@/components/ui";
-import { isNicknameTaken, updateUserProfile } from "@/lib/auth";
+import { updateUserProfile } from "@/lib/auth";
 import { uploadImage } from "@/lib/storage";
 import { KOREAN_BANKS } from "@/lib/constants";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -17,7 +21,8 @@ function OnboardingContent() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [nickname, setNickname] = useState(user?.nickname ?? "");
-  const [nicknameError, setNicknameError] = useState("");
+  const [nicknameStatus, setNicknameStatus] =
+    useState<NicknameCheckStatus>("idle");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     user?.photoURL ?? null,
@@ -27,7 +32,7 @@ function OnboardingContent() {
   const [accountHolder, setAccountHolder] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const canSubmit = nickname.trim().length > 0 && nickname.trim().length <= 8;
+  const canSubmit = nicknameStatus === "available";
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -38,15 +43,8 @@ function OnboardingContent() {
 
   async function handleSubmit() {
     if (!user || !canSubmit) return;
-    setNicknameError("");
     setLoading(true);
     try {
-      const taken = await isNicknameTaken(nickname.trim(), user.uid);
-      if (taken) {
-        setNicknameError("이미 사용 중인 닉네임이에요.");
-        return;
-      }
-
       let photoURL = user.photoURL;
       if (photoFile) {
         photoURL = await uploadImage(`users/${user.uid}/avatar`, photoFile);
@@ -107,25 +105,13 @@ function OnboardingContent() {
           </button>
         </div>
 
-        <Input
-          label="닉네임"
+        <NicknameCheckField
           value={nickname}
-          onChange={(e) => {
-            setNickname(e.target.value);
-            setNicknameError("");
-          }}
-          maxLength={8}
-          placeholder="8자 이내로 입력해주세요"
+          onChange={setNickname}
+          excludeUid={user?.uid}
+          status={nicknameStatus}
+          onStatusChange={setNicknameStatus}
         />
-        {nicknameError ? (
-          <p className="text-[13px] text-error-d text-right -mt-2 mb-3.5">
-            {nicknameError}
-          </p>
-        ) : (
-          <p className="text-[11px] text-gray-400 text-right -mt-2">
-            {nickname.length}/8
-          </p>
-        )}
 
         <div className="mt-6 mb-2">
           <div className="text-[16px] font-bold text-gray-700">
