@@ -2,12 +2,11 @@ import {
   addDoc,
   collection,
   doc,
-  increment,
   onSnapshot,
   orderBy,
   query,
+  runTransaction,
   serverTimestamp,
-  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
@@ -37,9 +36,86 @@ export function computeEqualSplit(
   return splits;
 }
 
+async function applyDebt(
+  meetingId: string,
+  debtorUid: string,
+  creditorUid: string,
+  amount: number,
+) {
+  if (!amount || amount <= 0 || debtorUid === creditorUid) return;
+
+  const forwardRef = doc(
+    db,
+    "meetings",
+    meetingId,
+    "settlements",
+    `${debtorUid}__${creditorUid}`,
+  );
+  const reverseRef = doc(
+    db,
+    "meetings",
+    meetingId,
+    "settlements",
+    `${creditorUid}__${debtorUid}`,
+  );
+
+  await runTransaction(db, async (tx) => {
+    const [forwardSnap, reverseSnap] = await Promise.all([
+      tx.get(forwardRef),
+      tx.get(reverseRef),
+    ]);
+    const forwardAmount = forwardSnap.exists()
+      ? (forwardSnap.data().amount ?? 0)
+      : 0;
+    const reverseAmount = reverseSnap.exists()
+      ? (reverseSnap.data().amount ?? 0)
+      : 0;
+
+    if (reverseAmount > 0) {
+      if (reverseAmount > amount) {
+        tx.set(
+          reverseRef,
+          {
+            debtorUid: creditorUid,
+            creditorUid: debtorUid,
+            amount: reverseAmount - amount,
+            status: reverseSnap.data()?.status ?? "pending",
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true },
+        );
+        return;
+      }
+      tx.delete(reverseRef);
+      const remainder = amount - reverseAmount;
+      if (remainder > 0) {
+        tx.set(forwardRef, {
+          debtorUid,
+          creditorUid,
+          amount: forwardAmount + remainder,
+          status: "pending",
+          updatedAt: serverTimestamp(),
+        });
+      } else if (forwardSnap.exists()) {
+        tx.delete(forwardRef);
+      }
+      return;
+    }
+
+    tx.set(forwardRef, {
+      debtorUid,
+      creditorUid,
+      amount: forwardAmount + amount,
+      status: "pending",
+      updatedAt: serverTimestamp(),
+    });
+  });
+}
+
 export async function createReceipt(
   meetingId: string,
   input: {
+    title: string;
     items: ReceiptItem[];
     total: number;
     participantIds: string[];
@@ -57,40 +133,48 @@ export async function createReceipt(
     createdAt: serverTimestamp(),
   });
 
+  const debtors = input.participantIds.filter((uid) => uid !== input.payerId);
+
   await Promise.all(
-    input.participantIds
-      .filter((uid) => uid !== input.payerId)
-      .map(async (uid) => {
-        const ref = doc(db, "meetings", meetingId, "settlements", uid);
-        await setDoc(
-          ref,
-          {
-            uid,
-            amount: increment(input.splits[uid] ?? 0),
-            status: "pending",
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true },
-        );
-        await addNotification(
-          uid,
-          "settlement_request",
-          `${memberNickname(input.payerId)} 님이 정산을 요청했어요`,
-          meetingId,
-        );
-      }),
+    debtors.map((uid) =>
+      applyDebt(meetingId, uid, input.payerId, input.splits[uid] ?? 0),
+    ),
   );
 
-  const alreadyNotified = new Set([
-    createdBy,
-    ...input.participantIds.filter((uid) => uid !== input.payerId),
-  ]);
+  await Promise.all(
+    debtors.map((uid) =>
+      addNotification(
+        uid,
+        "settlement_request",
+        `${memberNickname(input.payerId)} 님이 정산을 요청했어요`,
+        meetingId,
+      ),
+    ),
+  );
+
+  const alreadyNotified = new Set([createdBy, ...debtors]);
   await notifyMeetingMembers(
     memberIds.filter((uid) => !alreadyNotified.has(uid)),
     "receipt_added",
     `${memberNickname(createdBy)} 님이 영수증을 등록했어요`,
     meetingId,
   );
+}
+
+function parseReceipt(id: string, data: Record<string, unknown>): Receipt {
+  const createdAt = data.createdAt as { toMillis?: () => number } | undefined;
+  return {
+    id,
+    title: (data.title as string) || "",
+    items: (data.items as ReceiptItem[]) ?? [],
+    total: data.total as number,
+    participantIds: (data.participantIds as string[]) ?? [],
+    splitMethod: data.splitMethod as Receipt["splitMethod"],
+    splits: (data.splits as Record<string, number>) ?? {},
+    payerId: data.payerId as string,
+    createdBy: data.createdBy as string,
+    createdAt: createdAt?.toMillis?.() ?? Date.now(),
+  };
 }
 
 export function subscribeReceipts(
@@ -102,23 +186,19 @@ export function subscribeReceipts(
     orderBy("createdAt", "asc"),
   );
   return onSnapshot(q, (snap) => {
-    cb(
-      snap.docs.map((d) => {
-        const data = d.data();
-        return {
-          id: d.id,
-          items: data.items ?? [],
-          total: data.total,
-          participantIds: data.participantIds ?? [],
-          splitMethod: data.splitMethod,
-          splits: data.splits ?? {},
-          payerId: data.payerId,
-          createdBy: data.createdBy,
-          createdAt: data.createdAt?.toMillis?.() ?? Date.now(),
-        } as Receipt;
-      }),
-    );
+    cb(snap.docs.map((d) => parseReceipt(d.id, d.data())));
   });
+}
+
+export function subscribeReceipt(
+  meetingId: string,
+  receiptId: string,
+  cb: (r: Receipt | null) => void,
+) {
+  return onSnapshot(
+    doc(db, "meetings", meetingId, "receipts", receiptId),
+    (snap) => cb(snap.exists() ? parseReceipt(snap.id, snap.data()) : null),
+  );
 }
 
 export function subscribeSettlements(
@@ -131,7 +211,9 @@ export function subscribeSettlements(
       snap.docs.map((d) => {
         const data = d.data();
         return {
-          uid: data.uid,
+          id: d.id,
+          debtorUid: data.debtorUid,
+          creditorUid: data.creditorUid,
           amount: data.amount ?? 0,
           status: data.status ?? "pending",
           updatedAt: data.updatedAt?.toMillis?.() ?? Date.now(),
@@ -143,15 +225,24 @@ export function subscribeSettlements(
 
 export async function markSettlementPaid(
   meetingId: string,
-  uid: string,
-  ownerId: string,
+  debtorUid: string,
+  creditorUid: string,
 ) {
-  await updateDoc(doc(db, "meetings", meetingId, "settlements", uid), {
-    status: "paid",
-    updatedAt: serverTimestamp(),
-  });
+  await updateDoc(
+    doc(
+      db,
+      "meetings",
+      meetingId,
+      "settlements",
+      `${debtorUid}__${creditorUid}`,
+    ),
+    {
+      status: "paid",
+      updatedAt: serverTimestamp(),
+    },
+  );
   await addNotification(
-    ownerId,
+    creditorUid,
     "settlement_done",
     "정산이 완료됐어요",
     meetingId,
@@ -160,11 +251,11 @@ export async function markSettlementPaid(
 
 export async function requestSettlementReminder(
   meetingId: string,
-  uid: string,
+  debtorUid: string,
   fromNickname: string,
 ) {
   await addNotification(
-    uid,
+    debtorUid,
     "settlement_request",
     `${fromNickname} 님이 정산을 다시 요청했어요`,
     meetingId,
